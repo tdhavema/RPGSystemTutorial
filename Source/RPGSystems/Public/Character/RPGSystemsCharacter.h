@@ -5,8 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "CharacterBase.h"
-#include "GameplayAbilitySpecHandle.h"
-#include "Interfaces/RPGAbilityInterface.h"
+#include "Interfaces/RPGAbilitySystemInterface.h"
 #include "RPGSystemsCharacter.generated.h"
 
 class UGameplayAbility;
@@ -20,7 +19,7 @@ class UInputAction;
 struct FInputActionValue;
 
 UCLASS(config=Game)
-class ARPGSystemsCharacter : public ACharacterBase, public IAbilitySystemInterface, public IRPGAbilityInterface
+class ARPGSystemsCharacter : public ACharacterBase, public IAbilitySystemInterface, public IRPGAbilitySystemInterface
 {
 	GENERATED_BODY()
 	
@@ -46,8 +45,8 @@ public:
 	
 	ARPGSystemsCharacter();
 
-	/* Implement RPG Ability Interface */
-	virtual void SetDynamicProjectile_Implementation(const FGameplayTag& ProjectileTag) override;
+	/* Implement RPGAbilitySystemInteface */
+	virtual USceneComponent* GetDynamicSpawnPoint_Implementation() override;
 
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
@@ -70,19 +69,14 @@ protected:
 
 private:
 
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<USceneComponent> DynamicProjectileSpawnPoint;
+
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<URPGAbilitySystemComponent> RPGAbilitySystemComp;
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<URPGAttributeSet> RPGAttributes;
-
-	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Dyanmic Projectile Ability")
-	TSubclassOf<UGameplayAbility> DynamicProjectileAbility;
-
-	FGameplayAbilitySpecHandle ActiveDynamicProjectileAbilityHandle;
-
-	UFUNCTION(Server, Reliable)
-	void ServerSetDynamicProjectile(const FGameplayTag& ProjectileTag);
 
 public:
 	

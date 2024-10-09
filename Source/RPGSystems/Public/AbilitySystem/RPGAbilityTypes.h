@@ -3,9 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RPGAbilitySystemTypes.generated.h"
+#include "RPGAbilityTypes.generated.h"
 
-class UGameplayAbility;
 class AProjectileBase;
 
 USTRUCT()
@@ -17,7 +16,10 @@ struct FProjectileParams
 	TSubclassOf<AProjectileBase> ProjectileClass;
 
 	UPROPERTY(EditDefaultsOnly)
-	float InitialSpeed = 500.f;
+	TObjectPtr<UStaticMesh> ProjectileMesh;
+
+	UPROPERTY(EditDefaultsOnly)
+	float InitialSpeed = 1000.f;
 
 	UPROPERTY(EditDefaultsOnly)
 	float GravityScale = 1.f;
@@ -29,3 +31,6 @@ struct FProjectileParams
 	float Bounciness = 0.6f;
 	
 };
+
+
+

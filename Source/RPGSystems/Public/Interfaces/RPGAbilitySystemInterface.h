@@ -5,11 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "UObject/Interface.h"
-#include "RPGAbilityInterface.generated.h"
+#include "RPGAbilitySystemInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class URPGAbilityInterface : public UInterface
+class URPGAbilitySystemInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -17,7 +17,7 @@ class URPGAbilityInterface : public UInterface
 /**
  * 
  */
-class RPGSYSTEMS_API IRPGAbilityInterface
+class RPGSYSTEMS_API IRPGAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -25,5 +25,9 @@ class RPGSYSTEMS_API IRPGAbilityInterface
 public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	USceneComponent* GetDynamicSpawnPoint();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetDynamicProjectile(const FGameplayTag& ProjectileTag);
+
 };

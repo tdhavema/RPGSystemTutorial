@@ -2,14 +2,13 @@
 
 
 #include "AbilitySystem/Abilities/ProjectileAbility.h"
-
-#include "Data/ProjectileInfo.h"
-#include "Libraries/RPGAbilitySystemLibrary.h"
 #include "Projectiles/ProjectileBase.h"
+#include "Data/ProjectileInfo.h"
+#include "Interfaces/RPGAbilitySystemInterface.h"
+#include "Libraries/RPGAbilitySystemLibrary.h"
 
 UProjectileAbility::UProjectileAbility()
 {
-	ReplicationPolicy = EGameplayAbilityReplicationPolicy::ReplicateYes;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
@@ -18,22 +17,35 @@ void UProjectileAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInf
 	Super::OnGiveAbility(ActorInfo, Spec);
 
 	AvatarActorFromInfo = GetAvatarActorFromActorInfo();
-
-	if (!IsValid(AvatarActorFromInfo)) return;
+	
+	if (!ProjectileToSpawnTag.IsValid() || !IsValid(AvatarActorFromInfo)) return;
 
 	if (UProjectileInfo* ProjectileInfo = URPGAbilitySystemLibrary::GetProjectileInfo(GetAvatarActorFromActorInfo()))
 	{
-		if (ProjectileToSpawnTag.IsValid())
-		{
-			CurrentProjectileParams = *ProjectileInfo->ProjectileInfoMap.Find(ProjectileToSpawnTag);
-		}
+		CurrentProjectileParams = *ProjectileInfo->ProjectileInfoMap.Find(ProjectileToSpawnTag);
 	}
+	
 }
 
-void UProjectileAbility::SpawnProjectile(const FVector& TargetLocation)
+void UProjectileAbility::SpawnProjectile()
 {
-	if (!IsValid(AvatarActorFromInfo) || !IsValid(CurrentProjectileParams.ProjectileClass)) return;
+	if (!IsValid(CurrentProjectileParams.ProjectileClass)) return;
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,
-		FString::Printf(TEXT("Spawning Projectile Class: %s"), *CurrentProjectileParams.ProjectileClass->GetName()));
+	if (const USceneComponent* SpawnPointComp = IRPGAbilitySystemInterface::Execute_GetDynamicSpawnPoint(AvatarActorFromInfo))
+	{
+		const FVector SpawnPoint = SpawnPointComp->GetComponentLocation();
+		const FVector TargetLocation = AvatarActorFromInfo->GetActorForwardVector() * 10000;
+		const FRotator TargetRotation = (TargetLocation - SpawnPoint).Rotation();
+
+		FTransform SpawnTransform;
+		SpawnTransform.SetLocation(SpawnPoint);
+		SpawnTransform.SetRotation(TargetRotation.Quaternion());
+
+		if (AProjectileBase* SpawnedProjectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(CurrentProjectileParams.ProjectileClass, SpawnTransform))
+		{
+			SpawnedProjectile->SetProjectileParams(CurrentProjectileParams);
+
+			SpawnedProjectile->FinishSpawning(SpawnTransform);
+		}
+	}
 }

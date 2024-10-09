@@ -6,18 +6,27 @@
 #include "GameFramework/Actor.h"
 #include "ProjectileBase.generated.h"
 
+struct FProjectileParams;
+class UProjectileMovementComponent;
+
 UCLASS()
 class RPGSYSTEMS_API AProjectileBase : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+public:
 	
 	AProjectileBase();
 
-protected:
+	void SetProjectileParams(const FProjectileParams& Params);
 
-	virtual void BeginPlay() override;
+private:
+
+	UPROPERTY()
+	TObjectPtr<UStaticMeshComponent> ProjectileMesh;
+
+	UPROPERTY()
+	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
 
 
 };

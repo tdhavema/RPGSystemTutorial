@@ -12,3 +12,4 @@ UProjectileInfo* ARPGGameMode::GetProjectileInfo() const
 {
 	return ProjectileInfo;
 }
+

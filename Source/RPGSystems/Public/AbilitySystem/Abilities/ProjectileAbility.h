@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystem/RPGAbilitySystemTypes.h"
+#include "AbilitySystem/RPGAbilityTypes.h"
 #include "AbilitySystem/Abilities/RPGGameplayAbility.h"
 #include "ProjectileAbility.generated.h"
 
@@ -19,21 +19,19 @@ public:
 
 	UProjectileAbility();
 
-	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Projectile")
-	FGameplayTag ProjectileToSpawnTag;
-
-protected:
-
 	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
 
+	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Projectile")
+	FGameplayTag ProjectileToSpawnTag;
+	
 private:
-
-	UFUNCTION(BlueprintCallable)
-	void SpawnProjectile(const FVector& TargetLocation);
 
 	UPROPERTY()
 	TObjectPtr<AActor> AvatarActorFromInfo;
-	
+
 	FProjectileParams CurrentProjectileParams;
+
+	UFUNCTION(BlueprintCallable)
+	void SpawnProjectile();
 	
 };

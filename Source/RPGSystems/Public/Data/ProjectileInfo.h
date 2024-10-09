@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "AbilitySystem/RPGAbilitySystemTypes.h"
+#include "AbilitySystem/RPGAbilityTypes.h"
 #include "Engine/DataAsset.h"
 #include "ProjectileInfo.generated.h"
 

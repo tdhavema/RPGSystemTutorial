@@ -12,11 +12,9 @@
 #include "InputActionValue.h"
 #include "Game/PlayerState/RPGPlayerState.h"
 #include "AbilitySystem/RPGAbilitySystemComponent.h"
-#include "AbilitySystem/Abilities/ProjectileAbility.h"
 #include "Data/CharacterClassInfo.h"
 #include "Libraries/RPGAbilitySystemLibrary.h"
 #include "AbilitySystem/Attributes/RPGAttributeSet.h"
-#include "Projectiles/ProjectileBase.h"
 
 ARPGSystemsCharacter::ARPGSystemsCharacter()
 {
@@ -45,40 +43,14 @@ ARPGSystemsCharacter::ARPGSystemsCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); 
 	FollowCamera->bUsePawnControlRotation = false;
 
+	DynamicProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>("ProjectileSpawnPoint");
+	DynamicProjectileSpawnPoint->SetupAttachment(GetRootComponent());
+
 }
 
-void ARPGSystemsCharacter::SetDynamicProjectile_Implementation(const FGameplayTag& ProjectileTag)
+USceneComponent* ARPGSystemsCharacter::GetDynamicSpawnPoint_Implementation()
 {
-	if (!ProjectileTag.IsValid()) return;
-	
-	if (!HasAuthority())
-	{
-		ServerSetDynamicProjectile(ProjectileTag);
-		return;
-	}
-	
-	if (IsValid(RPGAbilitySystemComp))
-	{
-		if (ActiveDynamicProjectileAbilityHandle.IsValid())
-		{
-			RPGAbilitySystemComp->ClearAbility(ActiveDynamicProjectileAbilityHandle);
-		}
-
-		FGameplayAbilitySpec Spec = FGameplayAbilitySpec(DynamicProjectileAbility, 1);
-
-		if (UProjectileAbility* ProjectileAbility = Cast<UProjectileAbility>(Spec.Ability))
-		{
-			ProjectileAbility->ProjectileToSpawnTag = ProjectileTag;
-			Spec.DynamicAbilityTags.AddTag(ProjectileAbility->InputTag);
-		}
-
-		ActiveDynamicProjectileAbilityHandle = RPGAbilitySystemComp->GiveAbility(Spec);
-	}
-}
-
-void ARPGSystemsCharacter::ServerSetDynamicProjectile_Implementation(const FGameplayTag& ProjectileTag)
-{
-	Execute_SetDynamicProjectile(this, ProjectileTag);
+	return DynamicProjectileSpawnPoint;
 }
 
 void ARPGSystemsCharacter::PossessedBy(AController* NewController)

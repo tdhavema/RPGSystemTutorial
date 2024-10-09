@@ -26,7 +26,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category= "Custom Values|Class Defaults")
 	TObjectPtr<UCharacterClassInfo> ClassDefaults;
 
-	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Projectile Info")
+	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Projectiles")
 	TObjectPtr<UProjectileInfo> ProjectileInfo;
-	
 };

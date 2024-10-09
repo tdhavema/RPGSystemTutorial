@@ -3,16 +3,40 @@
 
 #include "Projectiles/ProjectileBase.h"
 
+#include "AbilitySystem/RPGAbilityTypes.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+
 
 AProjectileBase::AProjectileBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	bReplicates = true;
+
+	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>("ProjectileMesh");
+	SetRootComponent(ProjectileMesh);
+	ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ProjectileMesh->SetCollisionObjectType(ECC_WorldDynamic);
+	ProjectileMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	ProjectileMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	ProjectileMesh->SetIsReplicated(true);
+
+	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("MovementComponent");
 
 }
 
-void AProjectileBase::BeginPlay()
+void AProjectileBase::SetProjectileParams(const FProjectileParams& Params)
 {
-	Super::BeginPlay();
-	
-}
+	if (IsValid(ProjectileMesh))
+	{
+		ProjectileMesh->SetStaticMesh(Params.ProjectileMesh);
+	}
 
+	if (IsValid(ProjectileMovementComponent))
+	{
+		ProjectileMovementComponent->InitialSpeed = Params.InitialSpeed;
+		ProjectileMovementComponent->ProjectileGravityScale = Params.GravityScale;
+		ProjectileMovementComponent->bShouldBounce = Params.bShouldBounce;
+		ProjectileMovementComponent->Bounciness = Params.Bounciness;
+	}
+}

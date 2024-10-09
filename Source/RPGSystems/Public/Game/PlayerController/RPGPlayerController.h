@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "GameFramework/PlayerController.h"
 #include "Interfaces/InventoryInterface.h"
+#include "Interfaces/RPGAbilitySystemInterface.h"
 #include "RPGPlayerController.generated.h"
 
 class URPGAbilitySystemComponent;
@@ -18,7 +19,7 @@ class UInventoryComponent;
  * 
  */
 UCLASS()
-class RPGSYSTEMS_API ARPGPlayerController : public APlayerController, public IAbilitySystemInterface, public IInventoryInterface
+class RPGSYSTEMS_API ARPGPlayerController : public APlayerController, public IAbilitySystemInterface, public IInventoryInterface, public IRPGAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -30,6 +31,9 @@ public:
 
 	/* Implement Inventory Interface */
 	virtual UInventoryComponent* GetInventoryComponent_Implementation() override;
+
+	/* Implement RPGAbilitySystemInterface */
+	virtual void SetDynamicProjectile_Implementation(const FGameplayTag& ProjectileTag) override;
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
