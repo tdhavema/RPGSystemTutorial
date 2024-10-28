@@ -7,6 +7,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "RPGAbilitySystemLibrary.generated.h"
 
+struct FDamageEffectInfo;
 class UProjectileInfo;
 class UCharacterClassInfo;
 /**
@@ -24,6 +25,9 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	static UProjectileInfo* GetProjectileInfo(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable)
+	static void ApplyDamageEffect(const FDamageEffectInfo& DamageEffectInfo);
 
 	template<typename T>
 	static T* GetDataTableRowByTag(UDataTable* DataTable, FGameplayTag Tag);
