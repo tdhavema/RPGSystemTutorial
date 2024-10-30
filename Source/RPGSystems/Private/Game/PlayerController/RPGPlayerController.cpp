@@ -82,11 +82,11 @@ UInventoryComponent* ARPGPlayerController::GetInventoryComponent_Implementation(
 	return InventoryComponent;
 }
 
-void ARPGPlayerController::SetDynamicProjectile_Implementation(const FGameplayTag& ProjectileTag)
+void ARPGPlayerController::SetDynamicProjectile_Implementation(const FGameplayTag& ProjectileTag, int32 AbilityLevel)
 {
 	if (IsValid(RPGAbilitySystemComp))
 	{
-		RPGAbilitySystemComp->SetDynamicProjectile(ProjectileTag);
+		RPGAbilitySystemComp->SetDynamicProjectile(ProjectileTag, AbilityLevel);
 	}
 }
 

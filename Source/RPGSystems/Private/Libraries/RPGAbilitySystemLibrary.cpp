@@ -3,9 +3,11 @@
 
 #include "Libraries/RPGAbilitySystemLibrary.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectTypes.h"
 #include "AbilitySystem/RPGAbilityTypes.h"
+#include "AbilitySystem/RPGGameplayTags.h"
 #include "Game/GameMode/RPGGameMode.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -36,6 +38,7 @@ void URPGAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectInfo& Damage
 
 	const FGameplayEffectSpecHandle SpecHandle = DamageEffectInfo.SourceASC->MakeOutgoingSpec(DamageEffectInfo.DamageEffect, DamageEffectInfo.AbilityLevel, ContextHandle);
 
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, RPGGameplayTags::Combat::Data_Damage, DamageEffectInfo.BaseDamage);
 	if (IsValid(DamageEffectInfo.TargetASC))
 	{
 		DamageEffectInfo.TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
