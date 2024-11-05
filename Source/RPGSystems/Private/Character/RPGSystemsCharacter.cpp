@@ -120,10 +120,10 @@ void ARPGSystemsCharacter::BindCallbacksToDependencies()
 				OnHealthChanged(Data.NewValue, RPGAttributes->GetMaxHealth());
 			});
 
-		RPGAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(RPGAttributes->GetManaAttribute()).AddLambda(
+		RPGAbilitySystemComp->GetGameplayAttributeValueChangeDelegate(RPGAttributes->GetShieldAttribute()).AddLambda(
 			[this] (const FOnAttributeChangeData& Data)
 			{
-				OnManaChanged(Data.NewValue, RPGAttributes->GetMaxMana());
+				OnShieldChanged(Data.NewValue, RPGAttributes->GetMaxShield());
 			});
 	}
 }
@@ -133,7 +133,7 @@ void ARPGSystemsCharacter::BroadcastInitialValues()
 	if (IsValid(RPGAttributes))
 	{
 		OnHealthChanged(RPGAttributes->GetHealth(), RPGAttributes->GetMaxHealth());
-		OnManaChanged(RPGAttributes->GetMana(), RPGAttributes->GetMaxMana());
+		OnShieldChanged(RPGAttributes->GetShield(), RPGAttributes->GetMaxShield());
 	}
 }
 
