@@ -3,11 +3,61 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffectTypes.h"
 #include "RPGAbilityTypes.generated.h"
 
 class AProjectileBase;
 class UGameplayEffect;
 class UAbilitySystemComponent;
+
+USTRUCT()
+struct FRPGGameplayEffectContext : public FGameplayEffectContext
+{
+	GENERATED_BODY()
+
+	bool IsCriticalHit() const { return bCriticalHit; }
+
+	void SetIsCriticalHit(const bool InCriticalHit) { bCriticalHit = InCriticalHit; }
+
+	static RPGSYSTEMS_API
+	FRPGGameplayEffectContext* GetEffectContext(FGameplayEffectContextHandle Handle);
+
+	virtual UScriptStruct* GetScriptStruct() const override
+	{
+		return StaticStruct();
+	}
+
+	virtual FRPGGameplayEffectContext* Duplicate() const override
+	{
+		FRPGGameplayEffectContext* NewContext = new FRPGGameplayEffectContext();
+		*NewContext = *this;
+
+		if (GetHitResult())
+		{
+			NewContext->AddHitResult(*GetHitResult(), true);
+		}
+
+		return NewContext;
+	}
+
+	virtual bool NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess) override;
+
+private:
+
+	UPROPERTY()
+	bool bCriticalHit = false;
+	
+};
+
+template<>
+struct TStructOpsTypeTraits<FRPGGameplayEffectContext> : TStructOpsTypeTraitsBase2<FRPGGameplayEffectContext>
+{
+	enum
+	{
+		WithNetSerializer = true,
+		WithCopy = true
+	};
+};
 
 USTRUCT()
 struct FProjectileParams
