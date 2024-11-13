@@ -38,16 +38,6 @@ void ARPGPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	DOREPLIFETIME(ARPGPlayerController, InventoryComponent);
 }
 
-void ARPGPlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (IsValid(InventoryComponent))
-	{
-		InventoryComponent->bOwnerLocallyControlled = IsLocalController();
-	}
-}
-
 void ARPGPlayerController::AbilityInputPressed(FGameplayTag InputTag)
 {
 	if (IsValid(GetRPGAbilitySystemComponent()))
