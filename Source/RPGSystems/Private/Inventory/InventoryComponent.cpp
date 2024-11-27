@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "Equipment/EquipmentDefinition.h"
 #include "Inventory/ItemTypesToTables.h"
 #include "Libraries/RPGAbilitySystemLibrary.h"
 #include "Net/UnrealNetwork.h"
@@ -167,16 +168,18 @@ void UInventoryComponent::UseItem(const FGameplayTag& ItemTag, int32 NumItems)
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta,
 					FString::Printf(TEXT("Server Item Used: %s"), *Item.ItemTag.ToString()));
 			}
+			if (IsValid(Item.EquipmentItemProps.EquipmentClass))
+			{
+				EquipmentItemDelegate.Broadcast(Item.EquipmentItemProps.EquipmentClass);
+				InventoryList.RemoveItem(ItemTag);
+			}
 		}
 	}
 }
 
 void UInventoryComponent::ServerUseItem_Implementation(const FGameplayTag& ItemTag, int32 NumItems)
 {
-	if (InventoryList.HasEnough(ItemTag, NumItems))
-	{
-		UseItem(ItemTag, NumItems);
-	}
+	UseItem(ItemTag, NumItems);
 }
 
 FMasterItemDefinition UInventoryComponent::GetItemDefinitionByTag(const FGameplayTag& ItemTag) const

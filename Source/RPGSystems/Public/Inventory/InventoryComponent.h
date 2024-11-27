@@ -11,6 +11,8 @@
 
 class UItemTypesToTables;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FEquipmentItemUsed, const TSubclassOf<UEquipmentDefinition>& /* Equipment Definition */);
+
 USTRUCT(BlueprintType)
 struct FRPGInventoryEntry : public FFastArraySerializerItem
 {
@@ -82,6 +84,8 @@ class RPGSYSTEMS_API UInventoryComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
+	
+	FEquipmentItemUsed EquipmentItemDelegate;
 
 	UPROPERTY(Replicated)
 	FRPGInventoryList InventoryList;
