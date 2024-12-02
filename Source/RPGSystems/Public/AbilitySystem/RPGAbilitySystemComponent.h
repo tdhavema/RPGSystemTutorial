@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "RPGAbilitySystemComponent.generated.h"
 
+struct FRPGEquipmentEntry;
 DECLARE_MULTICAST_DELEGATE(FOnAttributesGiven);
 /**
  * 
@@ -27,6 +28,9 @@ public:
 	void AbilityInputReleased(const FGameplayTag& InputTag);
 
 	void SetDynamicProjectile(const FGameplayTag& ProjectileTag, int32 AbilityLevel = 1);
+
+	void AddEquipmentEffects(FRPGEquipmentEntry* EquipmentEntry);
+	void RemoveEquipmentEffects(FRPGEquipmentEntry* EquipmentEntry);
 
 private:
 

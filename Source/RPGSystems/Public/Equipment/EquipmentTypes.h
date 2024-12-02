@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "ActiveGameplayEffectHandle.h"
 #include "GameplayAbilitySpecHandle.h"
+#include "GameplayTagContainer.h"
 #include "EquipmentTypes.generated.h"
+
+class UGameplayEffect;
 
 USTRUCT()
 struct FEquipmentGrantedHandles
@@ -27,5 +30,33 @@ struct FEquipmentGrantedHandles
 	{
 		ActiveEffects.Add(EffectHandle);
 	}
+	
+};
+
+USTRUCT(BlueprintType)
+struct FEquipmentStatEffectGroup : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag StatEffectTag = FGameplayTag();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSoftClassPtr<UGameplayEffect> EffectClass = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float MinStatLevel = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float MaxStatLevel = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bFractionalStat = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float ProbabilityToSelect = 0.f;
+
+	UPROPERTY(BlueprintReadOnly)
+	float CurrentValue = 0.f;
 	
 };

@@ -9,6 +9,7 @@
 #include "Net/Serialization/FastArraySerializer.h"
 #include "EquipmentManagerComponent.generated.h"
 
+class URPGAbilitySystemComponent;
 class UEquipmentInstance;
 class UEquipmentDefinition;
 class UEquipmentManagerComponent;
@@ -27,8 +28,16 @@ struct FRPGEquipmentEntry : public FFastArraySerializerItem
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTag RarityTag = FGameplayTag();
 
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FEquipmentStatEffectGroup> StatEffects = TArray<FEquipmentStatEffectGroup>();
+
 	UPROPERTY(NotReplicated)
 	FEquipmentGrantedHandles GrantedHandles = FEquipmentGrantedHandles();
+
+	bool HasStats() const
+	{
+		return !StatEffects.IsEmpty();
+	}
 
 private:
 
@@ -58,7 +67,10 @@ struct FRPGEquipmentList : public FFastArraySerializer
 	OwnerComponent(InComponent)
 	{}
 
-	UEquipmentInstance* AddEntry(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition);
+	URPGAbilitySystemComponent* GetAbilitySystemComponent();
+	void AddEquipmentStats(FRPGEquipmentEntry* Entry);
+	void RemoveEquipmentStats(FRPGEquipmentEntry* Entry);
+	UEquipmentInstance* AddEntry(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition, const TArray<FEquipmentStatEffectGroup>& StatEffects);
 	void RemoveEntry(UEquipmentInstance* EquipmentInstance);
 
 	// FFastArraySerializer Contract
@@ -104,13 +116,13 @@ public:
 	UEquipmentManagerComponent();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void EquipItem(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition);
+	void EquipItem(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition, const TArray<FEquipmentStatEffectGroup>& StatEffects); 
 	void UnEquipItem(UEquipmentInstance* EquipmentInstance);
 
 private:
 
 	UFUNCTION(Server, Reliable)
-	void ServerEquipItem(TSubclassOf<UEquipmentDefinition> EquipmentDefinition);
+	void ServerEquipItem(TSubclassOf<UEquipmentDefinition> EquipmentDefinition, const TArray<FEquipmentStatEffectGroup>& StatEffects); 
 
 	UFUNCTION(Server, Reliable)
 	void ServerUnEquipItem(UEquipmentInstance* EquipmentInstance);

@@ -82,11 +82,11 @@ void ARPGPlayerController::BindCallbacksToDependencies()
 	if (IsValid(InventoryComponent))
 	{
 		InventoryComponent->EquipmentItemDelegate.AddLambda(
-			[this] (const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition)
+			[this] (const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition, const TArray<FEquipmentStatEffectGroup>& StatEffects)
 			{
 				if (IsValid(EquipmentComponent))
 				{
-					EquipmentComponent->EquipItem(EquipmentDefinition);
+					EquipmentComponent->EquipItem(EquipmentDefinition, StatEffects);
 				}
 			});
 	}

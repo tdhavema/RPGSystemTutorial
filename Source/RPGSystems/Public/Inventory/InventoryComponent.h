@@ -6,12 +6,16 @@
 #include "GameplayTagContainer.h"
 #include "ItemTypes.h"
 #include "Components/ActorComponent.h"
+#include "Equipment/EquipmentDefinition.h"
+#include "Equipment/EquipmentTypes.h"
 #include "Net/Serialization/FastArraySerializer.h"
 #include "InventoryComponent.generated.h"
 
+class UInventoryComponent;
+class UEquipmentStatEffects;
 class UItemTypesToTables;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FEquipmentItemUsed, const TSubclassOf<UEquipmentDefinition>& /* Equipment Definition */);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FEquipmentItemUsed, const TSubclassOf<UEquipmentDefinition>& /* Equipment Definition */, const TArray<FEquipmentStatEffectGroup>& /* Stat Effects */);
 
 USTRUCT(BlueprintType)
 struct FRPGInventoryEntry : public FFastArraySerializerItem
@@ -22,7 +26,21 @@ struct FRPGInventoryEntry : public FFastArraySerializerItem
 	FGameplayTag ItemTag = FGameplayTag();
 
 	UPROPERTY(BlueprintReadOnly)
+	FText ItemName = FText();
+
+	UPROPERTY(BlueprintReadOnly)
 	int32 Quantity = 0;
+
+	UPROPERTY(BlueprintReadOnly)
+	int64 ItemID = 0;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FEquipmentStatEffectGroup> StatEffects = TArray<FEquipmentStatEffectGroup>();
+
+	bool IsValid() const
+	{
+		return ItemID != 0;
+	}
 	
 };
 
@@ -37,13 +55,16 @@ struct FRPGInventoryList : public FFastArraySerializer
 	OwnerComponent(nullptr)
 	{}
 
-	FRPGInventoryList(UActorComponent* InComponent) :
+	FRPGInventoryList(UInventoryComponent* InComponent) :
 	OwnerComponent(InComponent)
 	{}
 
 	void AddItem(const FGameplayTag& ItemTag, int32 NumItems = 1);
-	void RemoveItem(const FGameplayTag& ItemTag, int32 NumItems = 1);
+	void RemoveItem(const FRPGInventoryEntry& Entry, int32 NumItems = 1);
 	bool HasEnough(const FGameplayTag& ItemTag, int32 NumItems = 1);
+	uint64 GenerateID();
+	void SetStats(UEquipmentStatEffects* InStats);
+	void RollForStats(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition, FRPGInventoryEntry* Entry);
 
 	// FFastArraySerializer Contract
 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
@@ -59,14 +80,19 @@ struct FRPGInventoryList : public FFastArraySerializer
 
 private:
 
-	friend class UInventoryComponent;
+	friend UInventoryComponent;
 
 	UPROPERTY()
 	TArray<FRPGInventoryEntry> Entries;
 
 	UPROPERTY(NotReplicated)
-	TObjectPtr<UActorComponent> OwnerComponent;
-	
+	TObjectPtr<UInventoryComponent> OwnerComponent;
+
+	UPROPERTY(NotReplicated)
+	uint64 LastAssignedID = 0;
+
+	UPROPERTY(NotReplicated)
+	TWeakObjectPtr<UEquipmentStatEffects> WeakStats;
 };
 
 template<>
@@ -93,12 +119,13 @@ public:
 	UInventoryComponent();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable)
 	void AddItem(const FGameplayTag& ItemTag, int32 NumItems = 1);
 
 	UFUNCTION(BlueprintCallable)
-	void UseItem(const FGameplayTag& ItemTag, int32 NumItems);
+	void UseItem(const FRPGInventoryEntry& Entry, int32 NumItems);
 
 	UFUNCTION(BlueprintPure)
 	FMasterItemDefinition GetItemDefinitionByTag(const FGameplayTag& ItemTag) const;
@@ -107,12 +134,15 @@ public:
 
 private:
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Stat Effects")
+	TObjectPtr<UEquipmentStatEffects> StatEffects;
+
+	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Item Definitions")
 	TObjectPtr<UItemTypesToTables> InventoryDefinitions;
 
 	UFUNCTION(Server, Reliable)
 	void ServerAddItem(const FGameplayTag& ItemTag, int32 NumItems);
 
 	UFUNCTION(Server, Reliable)
-	void ServerUseItem(const FGameplayTag& ItemTag, int32 NumItems); 
+	void ServerUseItem(const FRPGInventoryEntry& Entry, int32 NumItems); 
 };

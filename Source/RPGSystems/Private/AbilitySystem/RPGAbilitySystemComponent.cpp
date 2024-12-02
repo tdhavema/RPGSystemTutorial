@@ -5,6 +5,9 @@
 
 #include "AbilitySystem/Abilities/ProjectileAbility.h"
 #include "AbilitySystem/Abilities/RPGGameplayAbility.h"
+#include "Engine/AssetManager.h"
+#include "Engine/StreamableManager.h"
+#include "Equipment/EquipmentManagerComponent.h"
 
 void URPGAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& AbilitiesToGrant)
 {
@@ -104,6 +107,45 @@ void URPGAbilitySystemComponent::SetDynamicProjectile(const FGameplayTag& Projec
 		}
 	}
 	
+}
+
+void URPGAbilitySystemComponent::AddEquipmentEffects(FRPGEquipmentEntry* EquipmentEntry)
+{
+	FStreamableManager& Manager = UAssetManager::GetStreamableManager();
+	TWeakObjectPtr<URPGAbilitySystemComponent> WeakThis(this);
+	
+	const FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	
+	for (const FEquipmentStatEffectGroup& StatEffect : EquipmentEntry->StatEffects)
+	{
+		if (IsValid(StatEffect.EffectClass.Get()))
+		{
+			const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(StatEffect.EffectClass.Get(), StatEffect.CurrentValue, ContextHandle);
+			const FActiveGameplayEffectHandle ActiveHandle = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+
+			EquipmentEntry->GrantedHandles.AddEffectHandle(ActiveHandle);
+		}
+		else
+		{
+			Manager.RequestAsyncLoad(StatEffect.EffectClass.ToSoftObjectPath(),
+				[WeakThis, StatEffect, ContextHandle, EquipmentEntry]
+				{
+					const FGameplayEffectSpecHandle SpecHandle = WeakThis->MakeOutgoingSpec(StatEffect.EffectClass.Get(), StatEffect.CurrentValue, ContextHandle);
+					const FActiveGameplayEffectHandle ActiveHandle = WeakThis->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+
+					EquipmentEntry->GrantedHandles.AddEffectHandle(ActiveHandle);
+				});
+		}
+	}
+}
+
+void URPGAbilitySystemComponent::RemoveEquipmentEffects(FRPGEquipmentEntry* EquipmentEntry)
+{
+	for (auto HandleIt = EquipmentEntry->GrantedHandles.ActiveEffects.CreateIterator(); HandleIt; ++HandleIt)
+	{
+		RemoveActiveGameplayEffect(*HandleIt);
+		HandleIt.RemoveCurrent();
+	}
 }
 
 void URPGAbilitySystemComponent::ServerSetDynamicProjectile_Implementation(const FGameplayTag& ProjectileTag, int32 AbilityLevel)

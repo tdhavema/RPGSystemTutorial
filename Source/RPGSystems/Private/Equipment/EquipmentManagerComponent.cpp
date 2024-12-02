@@ -3,11 +3,21 @@
 
 #include "Equipment/EquipmentManagerComponent.h"
 
+#include "AbilitySystemGlobals.h"
+#include "AbilitySystem/RPGAbilitySystemComponent.h"
 #include "Equipment/EquipmentDefinition.h"
 #include "Equipment/EquipmentInstance.h"
 #include "Net/UnrealNetwork.h"
 
-UEquipmentInstance* FRPGEquipmentList::AddEntry(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition)
+URPGAbilitySystemComponent* FRPGEquipmentList::GetAbilitySystemComponent()
+{
+	check(OwnerComponent);
+	check(OwnerComponent->GetOwner());
+
+	return Cast<URPGAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwnerComponent->GetOwner()));
+}
+
+UEquipmentInstance* FRPGEquipmentList::AddEntry(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition, const TArray<FEquipmentStatEffectGroup>& StatEffects)
 {
 	check(EquipmentDefinition);
 	check(OwnerComponent);
@@ -37,7 +47,13 @@ UEquipmentInstance* FRPGEquipmentList::AddEntry(const TSubclassOf<UEquipmentDefi
 	NewEntry.RarityTag = EquipmentCDO->RarityTag;
 	NewEntry.SlotTag = EquipmentCDO->SlotTag;
 	NewEntry.EquipmentDefinition = EquipmentDefinition;
+	NewEntry.StatEffects = StatEffects;
 	NewEntry.Instance = NewObject<UEquipmentInstance>(OwnerComponent->GetOwner(), InstanceType);
+
+	if (NewEntry.HasStats())
+	{
+		AddEquipmentStats(&NewEntry);
+	}
 
 	MarkItemDirty(NewEntry);
 	EquipmentEntryDelegate.Broadcast(NewEntry);
@@ -47,6 +63,23 @@ UEquipmentInstance* FRPGEquipmentList::AddEntry(const TSubclassOf<UEquipmentDefi
 
 	return NewEntry.Instance;
 	
+}
+
+
+void FRPGEquipmentList::AddEquipmentStats(FRPGEquipmentEntry* Entry)
+{
+	if (URPGAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		ASC->AddEquipmentEffects(Entry);
+	}
+}
+
+void FRPGEquipmentList::RemoveEquipmentStats(FRPGEquipmentEntry* Entry)
+{
+	if (URPGAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		ASC->RemoveEquipmentEffects(Entry);
+	}
 }
 
 void FRPGEquipmentList::RemoveEntry(UEquipmentInstance* EquipmentInstance)
@@ -59,6 +92,7 @@ void FRPGEquipmentList::RemoveEntry(UEquipmentInstance* EquipmentInstance)
 
 		if (Entry.Instance == EquipmentInstance)
 		{
+			RemoveEquipmentStats(&Entry);
 			EntryIt.RemoveCurrent();
 			MarkArrayDirty();
 		}
@@ -116,15 +150,15 @@ void UEquipmentManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME(UEquipmentManagerComponent, EquipmentList);
 }
 
-void UEquipmentManagerComponent::EquipItem(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition)
+void UEquipmentManagerComponent::EquipItem(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition, const TArray<FEquipmentStatEffectGroup>& StatEffects)
 {
 	if (!GetOwner()->HasAuthority())
 	{
-		ServerEquipItem(EquipmentDefinition);
+		ServerEquipItem(EquipmentDefinition, StatEffects);
 		return;
 	}
 
-	EquipmentList.AddEntry(EquipmentDefinition);
+	EquipmentList.AddEntry(EquipmentDefinition, StatEffects);
 	
 }
 
@@ -140,9 +174,9 @@ void UEquipmentManagerComponent::UnEquipItem(UEquipmentInstance* EquipmentInstan
 }
 
 void UEquipmentManagerComponent::ServerEquipItem_Implementation(
-	TSubclassOf<UEquipmentDefinition> EquipmentDefinition)
+	TSubclassOf<UEquipmentDefinition> EquipmentDefinition, const TArray<FEquipmentStatEffectGroup>& StatEffects)
 {
-	EquipItem(EquipmentDefinition);
+	EquipItem(EquipmentDefinition, StatEffects);
 }
 
 void UEquipmentManagerComponent::ServerUnEquipItem_Implementation(UEquipmentInstance* EquipmentInstance)
