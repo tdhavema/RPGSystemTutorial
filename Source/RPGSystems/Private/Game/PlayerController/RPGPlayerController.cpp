@@ -79,7 +79,7 @@ URPGAbilitySystemComponent* ARPGPlayerController::GetRPGAbilitySystemComponent()
 
 void ARPGPlayerController::BindCallbacksToDependencies()
 {
-	if (IsValid(InventoryComponent))
+	if (IsValid(InventoryComponent) && IsValid(EquipmentComponent))
 	{
 		InventoryComponent->EquipmentItemDelegate.AddLambda(
 			[this] (const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition, const TArray<FEquipmentStatEffectGroup>& StatEffects)
@@ -87,6 +87,15 @@ void ARPGPlayerController::BindCallbacksToDependencies()
 				if (IsValid(EquipmentComponent))
 				{
 					EquipmentComponent->EquipItem(EquipmentDefinition, StatEffects);
+				}
+			});
+
+		EquipmentComponent->EquipmentList.UnEquippedEntryDelegate.AddLambda(
+			[this] (const FRPGEquipmentEntry& UnEquippedEntry)
+			{
+				if (IsValid(InventoryComponent))
+				{
+					InventoryComponent->AddUnEquippedItemEntry(UnEquippedEntry.EntryTag, UnEquippedEntry.StatEffects);
 				}
 			});
 	}

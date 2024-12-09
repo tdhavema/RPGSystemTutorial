@@ -78,6 +78,7 @@ void FRPGEquipmentList::RemoveEquipmentStats(FRPGEquipmentEntry* Entry)
 {
 	if (URPGAbilitySystemComponent* ASC = GetAbilitySystemComponent())
 	{
+		UnEquippedEntryDelegate.Broadcast(*Entry);
 		ASC->RemoveEquipmentEffects(Entry);
 	}
 }

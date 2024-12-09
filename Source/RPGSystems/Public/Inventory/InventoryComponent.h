@@ -65,6 +65,7 @@ struct FRPGInventoryList : public FFastArraySerializer
 	uint64 GenerateID();
 	void SetStats(UEquipmentStatEffects* InStats);
 	void RollForStats(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition, FRPGInventoryEntry* Entry);
+	void AddUnEquippedItem(const FGameplayTag& ItemTag, const TArray<FEquipmentStatEffectGroup>& StatEffects);
 
 	// FFastArraySerializer Contract
 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
@@ -131,6 +132,7 @@ public:
 	FMasterItemDefinition GetItemDefinitionByTag(const FGameplayTag& ItemTag) const;
 
 	TArray<FRPGInventoryEntry> GetInventoryEntries();
+	void AddUnEquippedItemEntry(const FGameplayTag& ItemTag, const TArray<FEquipmentStatEffectGroup>& InStatEffects);
 
 private:
 

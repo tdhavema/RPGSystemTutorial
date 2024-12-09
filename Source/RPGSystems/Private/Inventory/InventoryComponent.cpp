@@ -22,28 +22,29 @@ void FRPGInventoryList::AddItem(const FGameplayTag& ItemTag, int32 NumItems)
 {
 	if (ItemTag.MatchesTag(RPGGameplayTags::Static::Category_Equipment))
 	{
-		goto MakeNew;
+		// Cannot stack these categories, do nothing.
 	}
-	
-	for (auto EntryIt = Entries.CreateIterator(); EntryIt; ++EntryIt)
+	else
 	{
-		FRPGInventoryEntry& Entry = *EntryIt;
-
-		if (Entry.ItemTag.MatchesTagExact(ItemTag))
+		for (auto EntryIt = Entries.CreateIterator(); EntryIt; ++EntryIt)
 		{
-			Entry.Quantity += NumItems;
-			MarkItemDirty(Entry);
+			FRPGInventoryEntry& Entry = *EntryIt;
 
-			if (OwnerComponent->GetOwner()->HasAuthority())
+			if (Entry.ItemTag.MatchesTagExact(ItemTag))
 			{
-				DirtyItemDelegate.Broadcast(Entry);
+				Entry.Quantity += NumItems;
+				MarkItemDirty(Entry);
+
+				if (OwnerComponent->GetOwner()->HasAuthority())
+				{
+					DirtyItemDelegate.Broadcast(Entry);
+				}
+				return;
 			}
-			return;
 		}
 	}
-
-	MakeNew:
-	FMasterItemDefinition Item = OwnerComponent->GetItemDefinitionByTag(ItemTag);
+	
+	const FMasterItemDefinition Item = OwnerComponent->GetItemDefinitionByTag(ItemTag);
 	
 	FRPGInventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
 	NewEntry.ItemTag = ItemTag;
@@ -96,6 +97,22 @@ void FRPGInventoryList::RollForStats(const TSubclassOf<UEquipmentDefinition>& Eq
 			}
 		}
 	}
+}
+
+void FRPGInventoryList::AddUnEquippedItem(const FGameplayTag& ItemTag,
+	const TArray<FEquipmentStatEffectGroup>& StatEffects)
+{
+	const FMasterItemDefinition Item = OwnerComponent->GetItemDefinitionByTag(ItemTag);
+	
+	FRPGInventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
+	NewEntry.ItemTag = ItemTag;
+	NewEntry.ItemName = Item.ItemName;
+	NewEntry.Quantity = 1;
+	NewEntry.ItemID = GenerateID();
+	NewEntry.StatEffects = StatEffects;
+
+	DirtyItemDelegate.Broadcast(NewEntry);
+	MarkItemDirty(NewEntry);
 }
 
 void FRPGInventoryList::RemoveItem(const FRPGInventoryEntry& InventoryEntry, int32 NumItems)
@@ -289,4 +306,10 @@ FMasterItemDefinition UInventoryComponent::GetItemDefinitionByTag(const FGamepla
 TArray<FRPGInventoryEntry> UInventoryComponent::GetInventoryEntries()
 {
 	return InventoryList.Entries;
+}
+
+void UInventoryComponent::AddUnEquippedItemEntry(const FGameplayTag& ItemTag,
+	const TArray<FEquipmentStatEffectGroup>& InStatEffects)
+{
+	InventoryList.AddUnEquippedItem(ItemTag, InStatEffects);
 }

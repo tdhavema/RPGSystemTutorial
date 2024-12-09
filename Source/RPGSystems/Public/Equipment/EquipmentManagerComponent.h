@@ -53,6 +53,7 @@ private:
 };
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FEquipmentEntrySignature, const FRPGEquipmentEntry& /* Equipment Entry */);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnUnEquippedEntry, const FRPGEquipmentEntry& /* UnEquipped Entry */);
 
 USTRUCT()
 struct FRPGEquipmentList : public FFastArraySerializer
@@ -85,6 +86,7 @@ struct FRPGEquipmentList : public FFastArraySerializer
 	}
 
 	FEquipmentEntrySignature EquipmentEntryDelegate;
+	FOnUnEquippedEntry UnEquippedEntryDelegate;
 	
 private:
 
