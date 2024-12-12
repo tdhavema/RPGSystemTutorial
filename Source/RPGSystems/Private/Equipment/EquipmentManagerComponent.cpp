@@ -55,6 +55,8 @@ UEquipmentInstance* FRPGEquipmentList::AddEntry(const TSubclassOf<UEquipmentDefi
 		AddEquipmentStats(&NewEntry);
 	}
 
+	NewEntry.Instance->SpawnEquipmentActors(EquipmentCDO->ActorsToSpawn);
+
 	MarkItemDirty(NewEntry);
 	EquipmentEntryDelegate.Broadcast(NewEntry);
 
@@ -64,7 +66,6 @@ UEquipmentInstance* FRPGEquipmentList::AddEntry(const TSubclassOf<UEquipmentDefi
 	return NewEntry.Instance;
 	
 }
-
 
 void FRPGEquipmentList::AddEquipmentStats(FRPGEquipmentEntry* Entry)
 {
@@ -93,6 +94,7 @@ void FRPGEquipmentList::RemoveEntry(UEquipmentInstance* EquipmentInstance)
 
 		if (Entry.Instance == EquipmentInstance)
 		{
+			Entry.Instance->DestroySpawnedActors();
 			RemoveEquipmentStats(&Entry);
 			EntryIt.RemoveCurrent();
 			MarkArrayDirty();
@@ -159,7 +161,10 @@ void UEquipmentManagerComponent::EquipItem(const TSubclassOf<UEquipmentDefinitio
 		return;
 	}
 
-	EquipmentList.AddEntry(EquipmentDefinition, StatEffects);
+	if (UEquipmentInstance* Result = EquipmentList.AddEntry(EquipmentDefinition, StatEffects))
+	{
+		Result->OnEquipped();
+	}
 	
 }
 
@@ -171,6 +176,7 @@ void UEquipmentManagerComponent::UnEquipItem(UEquipmentInstance* EquipmentInstan
 		return;
 	}
 
+	EquipmentInstance->OnUnEquipped();
 	EquipmentList.RemoveEntry(EquipmentInstance);
 }
 

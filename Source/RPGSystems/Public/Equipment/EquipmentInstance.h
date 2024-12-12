@@ -6,6 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "EquipmentInstance.generated.h"
 
+struct FEquipmentActorsToSpawn;
 /**
  * 
  */
@@ -18,5 +19,15 @@ public:
 
 	virtual void OnEquipped();
 	virtual void OnUnEquipped();
+
+	void SpawnEquipmentActors(const TArray<FEquipmentActorsToSpawn>& ActorsToSpawn);
+	void DestroySpawnedActors();
+
+private:
+
+	UPROPERTY()
+	TArray<AActor*> SpawnedActors;
+
+	ACharacter* GetCharacter();
 	
 };

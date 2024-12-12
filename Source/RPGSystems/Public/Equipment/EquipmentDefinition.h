@@ -7,7 +7,21 @@
 #include "UObject/NoExportTypes.h"
 #include "EquipmentDefinition.generated.h"
 
+class AEquipmentActor;
 class UEquipmentInstance;
+
+USTRUCT()
+struct FEquipmentActorsToSpawn
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	TSoftClassPtr<AEquipmentActor> EquipmentClass = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	FName AttachName = FName();
+	
+};
 /**
  * 
  */
@@ -26,6 +40,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Info")
 	FGameplayTag RarityTag;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Info")
+	TSubclassOf<UEquipmentInstance> InstanceType;
 
 	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Stats")
 	int32 MinPossibleStats = 0;
@@ -35,8 +52,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Stats")
 	FGameplayTagContainer PossibleStatRolls;
-	
-	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Info")
-	TSubclassOf<UEquipmentInstance> InstanceType;
+
+	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Actors")
+	TArray<FEquipmentActorsToSpawn> ActorsToSpawn;
 	
 };
