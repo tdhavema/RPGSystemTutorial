@@ -29,14 +29,19 @@ struct FRPGEquipmentEntry : public FFastArraySerializerItem
 	FGameplayTag RarityTag = FGameplayTag();
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<FEquipmentStatEffectGroup> StatEffects = TArray<FEquipmentStatEffectGroup>();
+	FEquipmentEffectPackage EffectPackage = FEquipmentEffectPackage();
 
 	UPROPERTY(NotReplicated)
 	FEquipmentGrantedHandles GrantedHandles = FEquipmentGrantedHandles();
 
 	bool HasStats() const
 	{
-		return !StatEffects.IsEmpty();
+		return !EffectPackage.StatEffects.IsEmpty();
+	}
+
+	bool HasAbility() const
+	{
+		return EffectPackage.Ability.AbilityTag.IsValid();
 	}
 
 private:
@@ -71,7 +76,9 @@ struct FRPGEquipmentList : public FFastArraySerializer
 	URPGAbilitySystemComponent* GetAbilitySystemComponent();
 	void AddEquipmentStats(FRPGEquipmentEntry* Entry);
 	void RemoveEquipmentStats(FRPGEquipmentEntry* Entry);
-	UEquipmentInstance* AddEntry(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition, const TArray<FEquipmentStatEffectGroup>& StatEffects);
+	void AddEquipmentAbility(FRPGEquipmentEntry* Entry);
+	void RemoveEquipmentAbility(FRPGEquipmentEntry* Entry);
+	UEquipmentInstance* AddEntry(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition, const FEquipmentEffectPackage& EffectPackage);
 	void RemoveEntry(UEquipmentInstance* EquipmentInstance);
 
 	// FFastArraySerializer Contract
@@ -118,14 +125,14 @@ public:
 	UEquipmentManagerComponent();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void EquipItem(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition, const TArray<FEquipmentStatEffectGroup>& StatEffects); 
+	void EquipItem(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition, const FEquipmentEffectPackage& EffectPackage); 
 	void UnEquipItem(UEquipmentInstance* EquipmentInstance);
 
 private:
 
 	UFUNCTION(Server, Reliable)
-	void ServerEquipItem(TSubclassOf<UEquipmentDefinition> EquipmentDefinition, const TArray<FEquipmentStatEffectGroup>& StatEffects); 
-
+	void ServerEquipItem(TSubclassOf<UEquipmentDefinition> EquipmentDefinition, const FEquipmentEffectPackage& EffectPackage); 
+ 
 	UFUNCTION(Server, Reliable)
 	void ServerUnEquipItem(UEquipmentInstance* EquipmentInstance);
 

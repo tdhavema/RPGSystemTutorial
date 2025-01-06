@@ -116,7 +116,7 @@ void URPGAbilitySystemComponent::AddEquipmentEffects(FRPGEquipmentEntry* Equipme
 	
 	const FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
 	
-	for (const FEquipmentStatEffectGroup& StatEffect : EquipmentEntry->StatEffects)
+	for (const FEquipmentStatEffectGroup& StatEffect : EquipmentEntry->EffectPackage.StatEffects)
 	{
 		if (IsValid(StatEffect.EffectClass.Get()))
 		{
@@ -146,6 +146,47 @@ void URPGAbilitySystemComponent::RemoveEquipmentEffects(FRPGEquipmentEntry* Equi
 		RemoveActiveGameplayEffect(*HandleIt);
 		HandleIt.RemoveCurrent();
 	}
+}
+
+void URPGAbilitySystemComponent::AddEquipmentAbility(FRPGEquipmentEntry* EquipmentEntry)
+{
+	FStreamableManager& Manager = UAssetManager::GetStreamableManager();
+	TWeakObjectPtr<URPGAbilitySystemComponent> WeakThis(this);
+
+	if (IsValid(EquipmentEntry->EffectPackage.Ability.AbilityClass.Get()))
+	{
+		EquipmentEntry->GrantedHandles.GrantedAbility = GrantEquipmentAbility(EquipmentEntry);
+	}
+	else
+	{
+		Manager.RequestAsyncLoad(EquipmentEntry->EffectPackage.Ability.AbilityClass.ToSoftObjectPath(),
+			[WeakThis, EquipmentEntry]
+			{
+				EquipmentEntry->GrantedHandles.GrantedAbility = WeakThis->GrantEquipmentAbility(EquipmentEntry);
+			});
+	}
+}
+
+void URPGAbilitySystemComponent::RemoveEquipmentAbility(const FRPGEquipmentEntry* EquipmentEntry)
+{
+	ClearAbility(EquipmentEntry->GrantedHandles.GrantedAbility);
+}
+
+FGameplayAbilitySpecHandle URPGAbilitySystemComponent::GrantEquipmentAbility(const FRPGEquipmentEntry* EquipmentEntry)
+{
+	FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(EquipmentEntry->EffectPackage.Ability.AbilityClass.Get(), EquipmentEntry->EffectPackage.Ability.AbilityLevel);
+
+	if (URPGGameplayAbility* RPGAbility = Cast<URPGGameplayAbility>(AbilitySpec.Ability))
+	{
+		AbilitySpec.DynamicAbilityTags.AddTag(RPGAbility->InputTag);
+	}
+
+	if (UProjectileAbility* ProjectileAbility = Cast<UProjectileAbility>(AbilitySpec.Ability))
+	{
+		ProjectileAbility->ProjectileToSpawnTag = EquipmentEntry->EffectPackage.Ability.ContextTag;
+	}
+
+	return GiveAbility(AbilitySpec);
 }
 
 void URPGAbilitySystemComponent::ServerSetDynamicProjectile_Implementation(const FGameplayTag& ProjectileTag, int32 AbilityLevel)
