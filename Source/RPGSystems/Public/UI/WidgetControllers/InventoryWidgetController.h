@@ -10,6 +10,7 @@ struct FRPGInventoryEntry;
 class UInventoryComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryEntrySignature, const FRPGInventoryEntry&, Entry);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventoryItemRemoved, int64, ItemID);
 /**
  * 
  */
@@ -22,6 +23,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FInventoryEntrySignature InventoryEntryDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnInventoryItemRemoved OnInventoryItemRemoved;
 
 	void SetOwningActor(AActor* InOwner);
 
