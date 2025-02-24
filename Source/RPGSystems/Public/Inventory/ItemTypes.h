@@ -39,9 +39,6 @@ struct FMasterItemDefinition : public FTableRowBase
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag ItemTag = FGameplayTag();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FText ItemDescription = FText();
-
 	UPROPERTY(BlueprintReadOnly)
 	int32 ItemQuantity = 0;
 

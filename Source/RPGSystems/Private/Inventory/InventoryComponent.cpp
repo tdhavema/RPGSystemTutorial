@@ -200,12 +200,7 @@ void FRPGInventoryList::SetStats(UEquipmentStatEffects* InStats)
 
 void FRPGInventoryList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
 {
-	for (const int32 Index : RemovedIndices)
-	{
-		FRPGInventoryEntry& Entry = Entries[Index];
-
-		ItemRemovedDelegate.Broadcast(Entry.ItemID);
-	}
+	// If you can figure out what to do with this go for it. I don't know what it is reliably good for.
 }
 
 void FRPGInventoryList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
@@ -323,10 +318,7 @@ FMasterItemDefinition UInventoryComponent::GetItemDefinitionByTag(const FGamepla
 	{
 		if (ItemTag.MatchesTag(Pair.Key))
 		{
-			if (const FMasterItemDefinition* ValidItem = URPGAbilitySystemLibrary::GetDataTableRowByTag<FMasterItemDefinition>(Pair.Value, ItemTag))
-			{
-				return *ValidItem;
-			}
+			return *URPGAbilitySystemLibrary::GetDataTableRowByTag<FMasterItemDefinition>(Pair.Value, ItemTag);
 		}
 	}
 
@@ -342,9 +334,4 @@ void UInventoryComponent::AddUnEquippedItemEntry(const FGameplayTag& ItemTag,
 	const FEquipmentEffectPackage& EffectPackage)
 {
 	InventoryList.AddUnEquippedItem(ItemTag, EffectPackage);
-}
-
-bool UInventoryComponent::ServerUseItem_Validate(const FRPGInventoryEntry& Entry, int32 NumItems)
-{
-	return Entry.IsValid() && InventoryList.HasEnough(Entry.ItemTag, NumItems);
 }
