@@ -158,6 +158,7 @@ void FRPGInventoryList::RemoveItem(const FRPGInventoryEntry& InventoryEntry, int
 			}
 			else
 			{
+				InventoryItemRemovedDelegate.Broadcast(Entry.ItemID);
 				EntryIt.RemoveCurrent();
 				MarkArrayDirty();
 			}
