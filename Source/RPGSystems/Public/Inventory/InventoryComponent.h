@@ -45,6 +45,7 @@ struct FRPGInventoryEntry : public FFastArraySerializerItem
 };
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FDirtyInventoryItemSignature, const FRPGInventoryEntry& /* Dirty Item */);
+DECLARE_MULTICAST_DELEGATE_OneParam(FInventoryItemRemovedSignature, const int64 /* Item ID */);
 
 USTRUCT()
 struct FRPGInventoryList : public FFastArraySerializer
@@ -78,6 +79,7 @@ struct FRPGInventoryList : public FFastArraySerializer
 	}
 
 	FDirtyInventoryItemSignature DirtyItemDelegate;
+	FInventoryItemRemovedSignature InventoryItemRemovedDelegate;
 
 private:
 
@@ -145,6 +147,8 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerAddItem(const FGameplayTag& ItemTag, int32 NumItems);
 
-	UFUNCTION(Server, Reliable)
-	void ServerUseItem(const FRPGInventoryEntry& Entry, int32 NumItems); 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerUseItem(const FRPGInventoryEntry& Entry, int32 NumItems);
+
+	bool ServerUseItem_Validate(const FRPGInventoryEntry& Entry, int32 NumItems);
 };
