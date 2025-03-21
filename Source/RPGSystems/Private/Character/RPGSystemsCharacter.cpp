@@ -15,6 +15,7 @@
 #include "Data/CharacterClassInfo.h"
 #include "Libraries/RPGAbilitySystemLibrary.h"
 #include "AbilitySystem/Attributes/RPGAttributeSet.h"
+#include "Character/Animation/RPGAnimInstance.h"
 
 ARPGSystemsCharacter::ARPGSystemsCharacter()
 {
@@ -87,6 +88,11 @@ void ARPGSystemsCharacter::InitAbilityActorInfo()
 			if (HasAuthority())
 			{
 				InitClassDefaults();
+			}
+
+			if (URPGAnimInstance* RPGAnimInstance = Cast<URPGAnimInstance>(GetMesh()->GetAnimInstance()))
+			{
+				RPGAnimInstance->InitializeWithAbilitySystem(RPGAbilitySystemComp);
 			}
 		}
 	}
