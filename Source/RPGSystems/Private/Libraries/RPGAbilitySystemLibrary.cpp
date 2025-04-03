@@ -44,3 +44,11 @@ void URPGAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectInfo& Damage
 		DamageEffectInfo.TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	}
 }
+
+void URPGAbilitySystemLibrary::K2_SetLooseTagCountStatic(UAbilitySystemComponent* ASC, FGameplayTag Tag, int32 NewCount)
+{
+	if (IsValid(ASC))
+	{
+		ASC->SetLooseGameplayTagCount(Tag, NewCount);
+	}
+}
