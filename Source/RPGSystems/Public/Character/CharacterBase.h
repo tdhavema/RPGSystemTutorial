@@ -14,7 +14,7 @@ class RPGSYSTEMS_API ACharacterBase : public ACharacter
 
 public:
 
-	ACharacterBase();
+	ACharacterBase(const FObjectInitializer& ObjectInitializer);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHealthChanged(float CurrentHealth, float MaxHealth);

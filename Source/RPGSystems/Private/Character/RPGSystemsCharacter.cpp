@@ -16,8 +16,10 @@
 #include "Libraries/RPGAbilitySystemLibrary.h"
 #include "AbilitySystem/Attributes/RPGAttributeSet.h"
 #include "Character/Animation/RPGAnimInstance.h"
+#include "Character/Components/RPGCharacterMovement.h"
 
-ARPGSystemsCharacter::ARPGSystemsCharacter()
+ARPGSystemsCharacter::ARPGSystemsCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<URPGCharacterMovement>(CharacterMovementComponentName))
 {
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 	

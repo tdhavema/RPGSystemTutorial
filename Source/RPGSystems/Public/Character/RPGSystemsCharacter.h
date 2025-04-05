@@ -43,7 +43,7 @@ class ARPGSystemsCharacter : public ACharacterBase, public IAbilitySystemInterfa
 
 public:
 	
-	ARPGSystemsCharacter();
+	ARPGSystemsCharacter(const FObjectInitializer& ObjectInitializer);
 
 	/* Implement RPGAbilitySystemInteface */
 	virtual USceneComponent* GetDynamicSpawnPoint_Implementation() override;

@@ -19,7 +19,7 @@ class RPGSYSTEMS_API AEnemyBase : public ACharacterBase, public IAbilitySystemIn
 
 public:
 
-	AEnemyBase();
+	AEnemyBase(const FObjectInitializer& ObjectInitializer);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;

@@ -8,7 +8,8 @@
 #include "Libraries/RPGAbilitySystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 
-AEnemyBase::AEnemyBase()
+AEnemyBase::AEnemyBase(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	bReplicates = true;
 

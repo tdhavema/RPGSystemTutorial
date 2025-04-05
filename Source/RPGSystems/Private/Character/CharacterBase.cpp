@@ -5,7 +5,8 @@
 
 #include "Net/UnrealNetwork.h"
 
-ACharacterBase::ACharacterBase()
+ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
  	
 	PrimaryActorTick.bCanEverTick = true;
