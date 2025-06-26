@@ -17,7 +17,7 @@ void URPGAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<
 
 		if (const URPGGameplayAbility* RPGAbility = Cast<URPGGameplayAbility>(AbilitySpec.Ability))
 		{
-			AbilitySpec.DynamicAbilityTags.AddTag(RPGAbility->InputTag);
+			AbilitySpec.GetDynamicSpecSourceTags().AddTag(RPGAbility->InputTag);
 			GiveAbility(AbilitySpec);
 		}
 	}
@@ -50,7 +50,7 @@ void URPGAbilitySystemComponent::AbilityInputPressed(const FGameplayTag& InputTa
 	ABILITYLIST_SCOPE_LOCK();
 	for (const FGameplayAbilitySpec& Spec : GetActivatableAbilities())
 	{
-		if (Spec.DynamicAbilityTags.HasTagExact(InputTag))
+		if (Spec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
 		{
 			if (!Spec.IsActive())
 			{
@@ -58,8 +58,9 @@ void URPGAbilitySystemComponent::AbilityInputPressed(const FGameplayTag& InputTa
 			}
 			else
 			{
+				TArray<UGameplayAbility*> Instances = Spec.GetAbilityInstances();
 				InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, Spec.Handle,
-					Spec.ActivationInfo.GetActivationPredictionKey());
+					Instances.Last()->GetCurrentActivationInfo().GetActivationPredictionKey());
 			}
 		}
 	}
@@ -72,10 +73,11 @@ void URPGAbilitySystemComponent::AbilityInputReleased(const FGameplayTag& InputT
 	ABILITYLIST_SCOPE_LOCK();
 	for (const FGameplayAbilitySpec& Spec : GetActivatableAbilities())
 	{
-		if (Spec.DynamicAbilityTags.HasTagExact(InputTag))
+		if (Spec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
 		{
+			TArray<UGameplayAbility*> Instances = Spec.GetAbilityInstances();
 			InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, Spec.Handle,
-				Spec.ActivationInfo.GetActivationPredictionKey());
+				Instances.Last()->GetCurrentActivationInfo().GetActivationPredictionKey());
 		}
 	}
 }
@@ -101,7 +103,7 @@ void URPGAbilitySystemComponent::SetDynamicProjectile(const FGameplayTag& Projec
 		if (UProjectileAbility* ProjectileAbility = Cast<UProjectileAbility>(Spec.Ability))
 		{
 			ProjectileAbility->ProjectileToSpawnTag = ProjectileTag;
-			Spec.DynamicAbilityTags.AddTag(ProjectileAbility->InputTag);
+			Spec.GetDynamicSpecSourceTags().AddTag(ProjectileAbility->InputTag);
 
 			ActiveProjectileAbility = GiveAbility(Spec);
 		}
@@ -178,7 +180,7 @@ FGameplayAbilitySpecHandle URPGAbilitySystemComponent::GrantEquipmentAbility(con
 
 	if (URPGGameplayAbility* RPGAbility = Cast<URPGGameplayAbility>(AbilitySpec.Ability))
 	{
-		AbilitySpec.DynamicAbilityTags.AddTag(RPGAbility->InputTag);
+		AbilitySpec.GetDynamicSpecSourceTags().AddTag(RPGAbility->InputTag);
 	}
 
 	if (UProjectileAbility* ProjectileAbility = Cast<UProjectileAbility>(AbilitySpec.Ability))

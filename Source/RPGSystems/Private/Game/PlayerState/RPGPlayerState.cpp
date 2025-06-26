@@ -7,8 +7,8 @@
 
 ARPGPlayerState::ARPGPlayerState()
 {
-	NetUpdateFrequency = 100.f;
-	MinNetUpdateFrequency = 66.f;
+	SetNetUpdateFrequency(100.f);
+	SetMinNetUpdateFrequency(66.f);
 
 	RPGAbilitySystemComp = CreateDefaultSubobject<URPGAbilitySystemComponent>("AbilitySystemComp");
 	RPGAbilitySystemComp->SetIsReplicated(true);
