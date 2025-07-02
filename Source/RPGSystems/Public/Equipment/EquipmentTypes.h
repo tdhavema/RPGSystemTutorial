@@ -38,7 +38,10 @@ struct FEquipmentStatEffectGroup : public FTableRowBase
 	FGameplayTag StatEffectTag = FGameplayTag();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FText AttributeName = FText();
+	FText StatEffectName = FText();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag ContextTag = FGameplayTag();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSoftClassPtr<UGameplayEffect> EffectClass = nullptr;

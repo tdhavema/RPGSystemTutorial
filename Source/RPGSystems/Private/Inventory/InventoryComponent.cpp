@@ -72,31 +72,38 @@ void FRPGInventoryList::RollForStats(const TSubclassOf<UEquipmentDefinition>& Eq
 
 	if (EquipmentCDO->bForceAbilityRoll || FMath::FRandRange(0.f, 1.f) < EquipmentCDO->ProbabilityToRollAbility)
 	{
-		const int32 RandomIndex = FMath::RandRange(0, EquipmentCDO->PossibleAbilityRolls.Num() - 1);
-		const FGameplayTag& RandomTag = EquipmentCDO->PossibleAbilityRolls.GetByIndex(RandomIndex);
-
-		for (const auto& Pair : StatEffects->MasterStatMap)
+		bool bShouldRoll = true;
+		while (bShouldRoll)
 		{
-			if (RandomTag.MatchesTag(Pair.Key))
+			const int32 RandomIndex = FMath::RandRange(0, EquipmentCDO->PossibleAbilityRolls.Num() - 1);
+			const FGameplayTag& RandomTag = EquipmentCDO->PossibleAbilityRolls.GetByIndex(RandomIndex);
+
+			for (const auto& Pair : StatEffects->MasterStatMap)
 			{
-				if (const FEquipmentAbilityGroup* PossibleAbility = URPGAbilitySystemLibrary::GetDataTableRowByTag<FEquipmentAbilityGroup>(Pair.Value, RandomTag))
+				if (RandomTag.MatchesTag(Pair.Key))
 				{
-					if (FMath::FRandRange(0.f, 1.f) < PossibleAbility->ProbabilityToSelect)
+					if (const FEquipmentAbilityGroup* PossibleAbility = URPGAbilitySystemLibrary::GetDataTableRowByTag<FEquipmentAbilityGroup>(Pair.Value, RandomTag))
 					{
-						Entry->EffectPackage.Ability = *PossibleAbility;
-						break;
+						if (FMath::FRandRange(0.f, 1.f) < PossibleAbility->ProbabilityToSelect)
+						{
+							Entry->EffectPackage.Ability = *PossibleAbility;
+							bShouldRoll = false;
+							break;
+						}
 					}
 				}
 			}
 		}
+		
 	}
 
 	const int32 NumStatsToRoll = FMath::RandRange(EquipmentCDO->MinPossibleStats, EquipmentCDO->MaxPossibleStats);
 	int32 StatRollIndex = 0;
+	FGameplayTagContainer PossibleStatContainer = EquipmentCDO->PossibleStatRolls;
 	while (StatRollIndex < NumStatsToRoll)
 	{
-		const int32 RandomIndex = FMath::RandRange(0, EquipmentCDO->PossibleStatRolls.Num() - 1);
-		const FGameplayTag& RandomTag = EquipmentCDO->PossibleStatRolls.GetByIndex(RandomIndex);
+		const int32 RandomIndex = FMath::RandRange(0, PossibleStatContainer.Num() - 1);
+		const FGameplayTag& RandomTag = PossibleStatContainer.GetByIndex(RandomIndex);
 
 		for (const auto& Pair : StatEffects->MasterStatMap)
 		{
@@ -113,6 +120,21 @@ void FRPGInventoryList::RollForStats(const TSubclassOf<UEquipmentDefinition>& Eq
 
 						Entry->EffectPackage.StatEffects.Add(NewStat);
 						++StatRollIndex;
+
+						PossibleStatContainer.RemoveTag(RandomTag);
+						FName RandomTagName = RandomTag.GetTagLeafName();
+						FGameplayTagContainer TagsToRemove;
+						
+						for (const FGameplayTag& Tag : PossibleStatContainer)
+						{
+							if (Tag.GetTagLeafName() == RandomTagName)
+							{
+								TagsToRemove.AddTagFast(Tag);
+							}
+						}
+
+						PossibleStatContainer.RemoveTags(TagsToRemove);
+						
 						break;
 					}
 				}

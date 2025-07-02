@@ -59,6 +59,13 @@ void URPGAttributeSet::HandleIncomingDamage(const FGameplayEffectModCallbackData
 		const float RemainderDamage = fabs(LocalShield - LocalDamage);
 		SetHealth(FMath::Clamp(GetHealth() - RemainderDamage, 0.f, GetMaxHealth()));
 	}
+
+	FGameplayEffectContextHandle ContextHandle = Data.EffectSpec.GetContext();
+	FRPGGameplayEffectContext* RPGContext = FRPGGameplayEffectContext::GetEffectContext(ContextHandle);
+	FColor DebugColor = RPGContext->IsCriticalHit() ? FColor::Red : FColor::Green;
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, DebugColor,
+		FString::Printf(TEXT("Damage Dealt %.2f"), LocalDamage));
 }
 
 void URPGAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)

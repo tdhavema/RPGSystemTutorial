@@ -50,14 +50,14 @@ UEquipmentInstance* FRPGEquipmentList::AddEntry(const TSubclassOf<UEquipmentDefi
 	NewEntry.EffectPackage = EffectPackage;
 	NewEntry.Instance = NewObject<UEquipmentInstance>(OwnerComponent->GetOwner(), InstanceType);
 
-	if (NewEntry.HasStats())
-	{
-		AddEquipmentStats(&NewEntry);
-	}
-
 	if (NewEntry.HasAbility())
 	{
 		AddEquipmentAbility(&NewEntry);
+	}
+	
+	if (NewEntry.HasStats())
+	{
+		AddEquipmentStats(&NewEntry);
 	}
 
 	NewEntry.Instance->SpawnEquipmentActors(EquipmentCDO->ActorsToSpawn);
@@ -120,6 +120,42 @@ void FRPGEquipmentList::RemoveEntry(UEquipmentInstance* EquipmentInstance)
 			RemoveEquipmentAbility(&Entry);
 			EntryIt.RemoveCurrent();
 			MarkArrayDirty();
+		}
+	}
+}
+
+void FRPGEquipmentList::BindAbilitySystemDelegates()
+{
+	if (URPGAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		ASC->OnEquipmentAbilityGiven.AddLambda(
+			[this, ASC] (FRPGEquipmentEntry* EquipmentEntry)
+			{
+				CheckAbilityLevels(ASC, EquipmentEntry);
+			});
+	}
+}
+
+void FRPGEquipmentList::CheckAbilityLevels(UAbilitySystemComponent* ASC, FRPGEquipmentEntry* EquipmentEntry)
+{
+	for (FGameplayAbilitySpec& Spec : ASC->GetActivatableAbilities())
+	{
+		if (Spec.GetDynamicSpecSourceTags().HasTagExact(EquipmentEntry->EffectPackage.Ability.AbilityTag))
+		{
+			for (auto EntryIt = Entries.CreateIterator(); EntryIt; ++EntryIt)
+			{
+				const FRPGEquipmentEntry& CurrentEntry = *EntryIt;
+
+				for (const FEquipmentStatEffectGroup& StatEffect : CurrentEntry.EffectPackage.StatEffects)
+				{
+					if (!StatEffect.ContextTag.IsValid()) continue;
+
+					if (Spec.GetDynamicSpecSourceTags().HasTagExact(StatEffect.ContextTag))
+					{
+						Spec.Level = FMath::Clamp(Spec.Level + StatEffect.CurrentValue, 1.f, Spec.Level + StatEffect.CurrentValue);
+					}
+				}
+			}
 		}
 	}
 }
@@ -200,6 +236,16 @@ void UEquipmentManagerComponent::UnEquipItem(UEquipmentInstance* EquipmentInstan
 
 	EquipmentInstance->OnUnEquipped();
 	EquipmentList.RemoveEntry(EquipmentInstance);
+}
+
+void UEquipmentManagerComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (GetOwner()->HasAuthority())
+	{
+		EquipmentList.BindAbilitySystemDelegates();
+	}
 }
 
 void UEquipmentManagerComponent::ServerEquipItem_Implementation(
