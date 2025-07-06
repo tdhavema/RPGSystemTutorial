@@ -129,14 +129,14 @@ void FRPGEquipmentList::BindAbilitySystemDelegates()
 	if (URPGAbilitySystemComponent* ASC = GetAbilitySystemComponent())
 	{
 		ASC->OnEquipmentAbilityGiven.AddLambda(
-			[this, ASC] (FRPGEquipmentEntry* EquipmentEntry)
+			[this, ASC] (FRPGEquipmentEntry* EquipmentEntry, bool bAsync)
 			{
-				CheckAbilityLevels(ASC, EquipmentEntry);
+				CheckAbilityLevels(ASC, EquipmentEntry, bAsync);
 			});
 	}
 }
 
-void FRPGEquipmentList::CheckAbilityLevels(UAbilitySystemComponent* ASC, FRPGEquipmentEntry* EquipmentEntry)
+void FRPGEquipmentList::CheckAbilityLevels(UAbilitySystemComponent* ASC, FRPGEquipmentEntry* EquipmentEntry, bool bAsync)
 {
 	for (FGameplayAbilitySpec& Spec : ASC->GetActivatableAbilities())
 	{
@@ -145,6 +145,8 @@ void FRPGEquipmentList::CheckAbilityLevels(UAbilitySystemComponent* ASC, FRPGEqu
 			for (auto EntryIt = Entries.CreateIterator(); EntryIt; ++EntryIt)
 			{
 				const FRPGEquipmentEntry& CurrentEntry = *EntryIt;
+
+				if (!bAsync && CurrentEntry.EntryTag.MatchesTagExact(EquipmentEntry->EntryTag)) continue;
 
 				for (const FEquipmentStatEffectGroup& StatEffect : CurrentEntry.EffectPackage.StatEffects)
 				{

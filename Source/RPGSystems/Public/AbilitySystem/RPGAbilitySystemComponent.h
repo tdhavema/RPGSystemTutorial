@@ -9,7 +9,7 @@
 
 struct FRPGEquipmentEntry;
 DECLARE_MULTICAST_DELEGATE(FOnAttributesGiven);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnEquipmentAbilityGiven, FRPGEquipmentEntry* /* Equipment Entry */);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnEquipmentAbilityGiven, FRPGEquipmentEntry* /* Equipment Entry */, bool /* bAsync */);
 /**
  * 
  */

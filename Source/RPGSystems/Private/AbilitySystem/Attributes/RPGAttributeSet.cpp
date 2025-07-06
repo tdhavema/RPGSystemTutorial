@@ -20,6 +20,7 @@ void URPGAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME_CONDITION_NOTIFY(URPGAttributeSet, DamageReduction, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(URPGAttributeSet, CritChance, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(URPGAttributeSet, CritDamage, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URPGAttributeSet, MovementSpeed, COND_None, REPNOTIFY_Always);
 }
 
 void URPGAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -111,4 +112,9 @@ void URPGAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana)
 void URPGAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(URPGAttributeSet, MaxMana, OldMaxMana);
+}
+
+void URPGAttributeSet::OnRep_MovementSpeed(const FGameplayAttributeData& OldMovementSpeed)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URPGAttributeSet, MovementSpeed, OldMovementSpeed);
 }

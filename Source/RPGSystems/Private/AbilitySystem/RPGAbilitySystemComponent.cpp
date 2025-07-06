@@ -196,7 +196,7 @@ void URPGAbilitySystemComponent::AddEquipmentAbility(FRPGEquipmentEntry* Equipme
 	if (IsValid(EquipmentEntry->EffectPackage.Ability.AbilityClass.Get()))
 	{
 		EquipmentEntry->GrantedHandles.GrantedAbility = GrantEquipmentAbility(EquipmentEntry);
-		OnEquipmentAbilityGiven.Broadcast(EquipmentEntry);
+		OnEquipmentAbilityGiven.Broadcast(EquipmentEntry, false);
 	}
 	else
 	{
@@ -204,7 +204,7 @@ void URPGAbilitySystemComponent::AddEquipmentAbility(FRPGEquipmentEntry* Equipme
 			[WeakThis, EquipmentEntry]
 			{
 				EquipmentEntry->GrantedHandles.GrantedAbility = WeakThis->GrantEquipmentAbility(EquipmentEntry);
-				WeakThis->OnEquipmentAbilityGiven.Broadcast(EquipmentEntry);
+				WeakThis->OnEquipmentAbilityGiven.Broadcast(EquipmentEntry, true);
 			});
 	}
 }

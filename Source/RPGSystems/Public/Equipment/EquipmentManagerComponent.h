@@ -81,7 +81,7 @@ struct FRPGEquipmentList : public FFastArraySerializer
 	UEquipmentInstance* AddEntry(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition, const FEquipmentEffectPackage& EffectPackage);
 	void RemoveEntry(UEquipmentInstance* EquipmentInstance);
 	void BindAbilitySystemDelegates();
-	void CheckAbilityLevels(UAbilitySystemComponent* ASC, FRPGEquipmentEntry* EquipmentEntry);
+	void CheckAbilityLevels(UAbilitySystemComponent* ASC, FRPGEquipmentEntry* EquipmentEntry, bool bAsync);
 
 	// FFastArraySerializer Contract
 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);

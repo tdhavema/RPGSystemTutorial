@@ -33,6 +33,9 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set Loose Tag Count Static"))
 	static void K2_SetLooseTagCountStatic(UAbilitySystemComponent* ASC, FGameplayTag Tag, int32 NewCount);
 
+	UFUNCTION(BlueprintPure)
+	static float GetScalableFloatValueAtLevel(const FScalableFloat& Curve, float InLevel);
+
 	template<typename T>
 	static T* GetDataTableRowByTag(UDataTable* DataTable, FGameplayTag Tag);
 	

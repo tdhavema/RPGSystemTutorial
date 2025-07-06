@@ -6,6 +6,7 @@
 #include "ActiveGameplayEffectHandle.h"
 #include "GameplayAbilitySpecHandle.h"
 #include "GameplayTagContainer.h"
+#include "ScalableFloat.h"
 #include "EquipmentTypes.generated.h"
 
 class UGameplayAbility;
@@ -56,10 +57,16 @@ struct FEquipmentStatEffectGroup : public FTableRowBase
 	bool bFractionalStat = false;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bIsMultiplier = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float ProbabilityToSelect = 0.f;
 
 	UPROPERTY(BlueprintReadOnly)
 	float CurrentValue = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FScalableFloat NonLinearCurve = FScalableFloat();
 	
 };
 
