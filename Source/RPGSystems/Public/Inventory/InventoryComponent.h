@@ -41,6 +41,11 @@ struct FRPGInventoryEntry : public FFastArraySerializerItem
 	{
 		return ItemID != 0;
 	}
+
+	bool operator==(const FRPGInventoryEntry& Other) const
+	{
+		return Other.ItemID == ItemID;
+	}
 	
 };
 
@@ -135,6 +140,9 @@ public:
 
 	TArray<FRPGInventoryEntry> GetInventoryEntries();
 	void AddUnEquippedItemEntry(const FGameplayTag& ItemTag, const FEquipmentEffectPackage& EffectPackage);
+
+	UFUNCTION(BlueprintPure)
+	TArray<FRPGInventoryEntry> GetEntriesByString(const FString& String);
 
 private:
 
