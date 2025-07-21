@@ -112,6 +112,8 @@ struct TStructOpsTypeTraits<FRPGInventoryList> : TStructOpsTypeTraitsBase2<FRPGI
 	};
 };
 
+DECLARE_MULTICAST_DELEGATE_TwoParams(FItemDroppedSignature, const FRPGInventoryEntry* /* Entry */, int32 /* Num Items */);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class RPGSYSTEMS_API UInventoryComponent : public UActorComponent
 {
@@ -120,6 +122,7 @@ class RPGSYSTEMS_API UInventoryComponent : public UActorComponent
 public:
 	
 	FEquipmentItemUsed EquipmentItemDelegate;
+	FItemDroppedSignature ItemDroppedDelegate;
 
 	UPROPERTY(Replicated)
 	FRPGInventoryList InventoryList;
@@ -134,6 +137,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UseItem(const FRPGInventoryEntry& Entry, int32 NumItems);
+
+	UFUNCTION(BlueprintCallable)
+	void DropItem(const FRPGInventoryEntry& Entry, int32 NumItems);
 
 	UFUNCTION(BlueprintPure)
 	FMasterItemDefinition GetItemDefinitionByTag(const FGameplayTag& ItemTag) const;
@@ -159,4 +165,7 @@ private:
 	void ServerUseItem(const FRPGInventoryEntry& Entry, int32 NumItems);
 
 	bool ServerUseItem_Validate(const FRPGInventoryEntry& Entry, int32 NumItems);
+
+	UFUNCTION(Server, Reliable)
+	void ServerDropItem(const FRPGInventoryEntry& Entry, int32 NumItems);
 };

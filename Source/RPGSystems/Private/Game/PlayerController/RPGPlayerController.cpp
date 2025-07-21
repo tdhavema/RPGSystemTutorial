@@ -12,7 +12,10 @@
 #include "UI/WidgetControllers/InventoryWidgetController.h"
 #include "UI/RPGSystemsWidget.h"
 #include "AbilitySystem/RPGAbilitySystemComponent.h"
+#include "Engine/AssetManager.h"
+#include "Engine/StreamableManager.h"
 #include "Equipment/EquipmentManagerComponent.h"
+#include "Inventory/ItemActor.h"
 
 ARPGPlayerController::ARPGPlayerController()
 {
@@ -90,6 +93,12 @@ void ARPGPlayerController::BindCallbacksToDependencies()
 				}
 			});
 
+		InventoryComponent->ItemDroppedDelegate.AddLambda(
+			[this] (const FRPGInventoryEntry* Entry, int32 NumItems)
+			{
+				SpawnItem(Entry, NumItems);
+			});
+
 		EquipmentComponent->EquipmentList.UnEquippedEntryDelegate.AddLambda(
 			[this] (const FRPGEquipmentEntry& UnEquippedEntry)
 			{
@@ -98,6 +107,39 @@ void ARPGPlayerController::BindCallbacksToDependencies()
 					InventoryComponent->AddUnEquippedItemEntry(UnEquippedEntry.EntryTag, UnEquippedEntry.EffectPackage);
 				}
 			});
+	}
+}
+
+void ARPGPlayerController::SpawnItem(const FRPGInventoryEntry* Entry, int32 NumItems)
+{
+	if (Entry && IsValid(InventoryComponent))
+	{
+		const FVector ForwardLocation = GetPawn()->GetActorLocation() + GetPawn()->GetActorForwardVector() * ItemSpawnForwardDistance;
+		FTransform SpawnTransform;
+		SpawnTransform.SetLocation(ForwardLocation);
+
+		AItemActor* NewActor = GetWorld()->SpawnActorDeferred<AItemActor>(AItemActor::StaticClass(), SpawnTransform);
+
+		NewActor->SetParams(Entry, NumItems);
+
+		FMasterItemDefinition Item = InventoryComponent->GetItemDefinitionByTag(Entry->ItemTag);
+
+		if (IsValid(Item.ItemMesh.Get()))
+		{
+			NewActor->SetMesh(Item.ItemMesh.Get());
+			NewActor->FinishSpawning(SpawnTransform);
+		}
+		else
+		{
+			FStreamableManager& Manager = UAssetManager::GetStreamableManager();
+
+			Manager.RequestAsyncLoad(Item.ItemMesh.ToSoftObjectPath(),
+				[NewActor, Item, SpawnTransform]
+				{
+					NewActor->SetMesh(Item.ItemMesh.Get());
+					NewActor->FinishSpawning(SpawnTransform);
+				});
+		}
 	}
 }
 

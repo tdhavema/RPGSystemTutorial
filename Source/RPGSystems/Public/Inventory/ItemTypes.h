@@ -49,7 +49,10 @@ struct FMasterItemDefinition : public FTableRowBase
 	FText ItemName = FText();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<UTexture2D> Icon = nullptr;
+	TSoftObjectPtr<UStaticMesh> ItemMesh = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSoftObjectPtr<UTexture2D> Icon = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FText Description = FText();

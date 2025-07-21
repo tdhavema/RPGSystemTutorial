@@ -10,6 +10,7 @@
 #include "Interfaces/RPGAbilitySystemInterface.h"
 #include "RPGPlayerController.generated.h"
 
+struct FRPGInventoryEntry;
 class UEquipmentManagerComponent;
 class URPGAbilitySystemComponent;
 class URPGInputConfig;
@@ -79,5 +80,10 @@ private:
 
 	URPGAbilitySystemComponent* GetRPGAbilitySystemComponent();
 	void BindCallbacksToDependencies();
+
+	void SpawnItem(const FRPGInventoryEntry* Entry, int32 NumItems);
+
+	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Item Spawn")
+	float ItemSpawnForwardDistance = 250.f;
 
 };

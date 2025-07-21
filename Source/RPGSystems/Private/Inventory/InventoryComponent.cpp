@@ -415,3 +415,20 @@ bool UInventoryComponent::ServerUseItem_Validate(const FRPGInventoryEntry& Entry
 {
 	return Entry.IsValid() && InventoryList.HasEnough(Entry.ItemTag, NumItems);
 }
+
+void UInventoryComponent::DropItem(const FRPGInventoryEntry& Entry, int32 NumItems)
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		ServerDropItem(Entry, NumItems);
+		return;
+	}
+
+	ItemDroppedDelegate.Broadcast(&Entry, NumItems);
+}
+
+void UInventoryComponent::ServerDropItem_Implementation(const FRPGInventoryEntry& Entry, int32 NumItems)
+{
+	DropItem(Entry, NumItems);
+}
+
