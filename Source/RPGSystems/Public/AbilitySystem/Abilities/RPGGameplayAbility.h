@@ -18,5 +18,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category= "Custom Values|Input")
 	FGameplayTag InputTag;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category= "Custom Values|Multiplayer")
+	bool bIsClientPassive = false;
 };

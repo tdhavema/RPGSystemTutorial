@@ -7,7 +7,10 @@
 #include "AbilitySystemComponent.h"
 #include "NativeGameplayTags.h"
 #include "Data/EquipmentStatEffects.h"
+#include "Engine/AssetManager.h"
+#include "Engine/StreamableManager.h"
 #include "Equipment/EquipmentDefinition.h"
+#include "Inventory/ItemActor.h"
 #include "Inventory/ItemTypesToTables.h"
 #include "Libraries/RPGAbilitySystemLibrary.h"
 #include "Net/UnrealNetwork.h"
@@ -409,6 +412,32 @@ TArray<FRPGInventoryEntry> UInventoryComponent::GetEntriesByString(const FString
 	}
 
 	return MatchedEntries;
+}
+
+void UInventoryComponent::SpawnItem(const FTransform& SpawnTransform, const FRPGInventoryEntry* Entry, int32 NumItems)
+{
+	AItemActor* NewActor = GetWorld()->SpawnActorDeferred<AItemActor>(AItemActor::StaticClass(), SpawnTransform);
+
+	NewActor->SetParams(Entry, NumItems);
+
+	FMasterItemDefinition Item = GetItemDefinitionByTag(Entry->ItemTag);
+
+	if (IsValid(Item.ItemMesh.Get()))
+	{
+		NewActor->SetMesh(Item.ItemMesh.Get());
+		NewActor->FinishSpawning(SpawnTransform);
+	}
+	else
+	{
+		FStreamableManager& Manager = UAssetManager::GetStreamableManager();
+
+		Manager.RequestAsyncLoad(Item.ItemMesh.ToSoftObjectPath(),
+			[NewActor, Item, SpawnTransform]
+			{
+				NewActor->SetMesh(Item.ItemMesh.Get());
+				NewActor->FinishSpawning(SpawnTransform);
+			});
+	}
 }
 
 bool UInventoryComponent::ServerUseItem_Validate(const FRPGInventoryEntry& Entry, int32 NumItems)

@@ -6,12 +6,13 @@
 #include "GameplayTagContainer.h"
 #include "Equipment/EquipmentTypes.h"
 #include "GameFramework/Actor.h"
+#include "Interfaces/InteractInterface.h"
 #include "ItemActor.generated.h"
 
 struct FRPGInventoryEntry;
 
 UCLASS()
-class RPGSYSTEMS_API AItemActor : public AActor
+class RPGSYSTEMS_API AItemActor : public AActor, public IInteractInterface
 {
 	GENERATED_BODY()
 

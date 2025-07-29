@@ -149,6 +149,7 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	TArray<FRPGInventoryEntry> GetEntriesByString(const FString& String);
+	void SpawnItem(const FTransform& SpawnTransform, const FRPGInventoryEntry* Entry, int32 NumItems);
 
 private:
 

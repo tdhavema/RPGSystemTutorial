@@ -118,28 +118,7 @@ void ARPGPlayerController::SpawnItem(const FRPGInventoryEntry* Entry, int32 NumI
 		FTransform SpawnTransform;
 		SpawnTransform.SetLocation(ForwardLocation);
 
-		AItemActor* NewActor = GetWorld()->SpawnActorDeferred<AItemActor>(AItemActor::StaticClass(), SpawnTransform);
-
-		NewActor->SetParams(Entry, NumItems);
-
-		FMasterItemDefinition Item = InventoryComponent->GetItemDefinitionByTag(Entry->ItemTag);
-
-		if (IsValid(Item.ItemMesh.Get()))
-		{
-			NewActor->SetMesh(Item.ItemMesh.Get());
-			NewActor->FinishSpawning(SpawnTransform);
-		}
-		else
-		{
-			FStreamableManager& Manager = UAssetManager::GetStreamableManager();
-
-			Manager.RequestAsyncLoad(Item.ItemMesh.ToSoftObjectPath(),
-				[NewActor, Item, SpawnTransform]
-				{
-					NewActor->SetMesh(Item.ItemMesh.Get());
-					NewActor->FinishSpawning(SpawnTransform);
-				});
-		}
+		InventoryComponent->SpawnItem(SpawnTransform, Entry, NumItems);
 	}
 }
 
