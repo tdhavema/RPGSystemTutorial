@@ -147,14 +147,14 @@ void FRPGInventoryList::RollForStats(const TSubclassOf<UEquipmentDefinition>& Eq
 }
 
 void FRPGInventoryList::AddUnEquippedItem(const FGameplayTag& ItemTag,
-	const FEquipmentEffectPackage& EffectPackage)
+	const FEquipmentEffectPackage& EffectPackage, int32 NumItems)
 {
 	const FMasterItemDefinition Item = OwnerComponent->GetItemDefinitionByTag(ItemTag);
 	
 	FRPGInventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
 	NewEntry.ItemTag = ItemTag;
 	NewEntry.ItemName = Item.ItemName;
-	NewEntry.Quantity = 1;
+	NewEntry.Quantity = NumItems;
 	NewEntry.ItemID = GenerateID();
 	NewEntry.EffectPackage = EffectPackage;
 
@@ -416,7 +416,9 @@ TArray<FRPGInventoryEntry> UInventoryComponent::GetEntriesByString(const FString
 
 void UInventoryComponent::SpawnItem(const FTransform& SpawnTransform, const FRPGInventoryEntry* Entry, int32 NumItems)
 {
-	AItemActor* NewActor = GetWorld()->SpawnActorDeferred<AItemActor>(AItemActor::StaticClass(), SpawnTransform);
+	if (!IsValid(DefaultItemClass)) return;
+	
+	AItemActor* NewActor = GetWorld()->SpawnActorDeferred<AItemActor>(DefaultItemClass, SpawnTransform);
 
 	NewActor->SetParams(Entry, NumItems);
 
@@ -454,6 +456,7 @@ void UInventoryComponent::DropItem(const FRPGInventoryEntry& Entry, int32 NumIte
 	}
 
 	ItemDroppedDelegate.Broadcast(&Entry, NumItems);
+	InventoryList.RemoveItem(Entry, NumItems);
 }
 
 void UInventoryComponent::ServerDropItem_Implementation(const FRPGInventoryEntry& Entry, int32 NumItems)
@@ -461,3 +464,22 @@ void UInventoryComponent::ServerDropItem_Implementation(const FRPGInventoryEntry
 	DropItem(Entry, NumItems);
 }
 
+void UInventoryComponent::PickupItem(AItemActor* Item)
+{
+	if (!IsValid(Item)) return;
+
+	if (!GetOwner()->HasAuthority())
+	{
+		ServerPickupItem(Item);
+		return;
+	}
+
+	InventoryList.AddUnEquippedItem(Item->ItemTag, Item->EffectPackage, Item->NumItems);
+
+	Item->Destroy();
+}
+
+void UInventoryComponent::ServerPickupItem_Implementation(AItemActor* Item)
+{
+	PickupItem(Item);
+}

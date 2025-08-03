@@ -4,18 +4,27 @@
 #include "Inventory/ItemActor.h"
 
 #include "Inventory/InventoryComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 AItemActor::AItemActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	SetReplicates(true);
+	bReplicates = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	SetRootComponent(Mesh);
-	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	Mesh->SetIsReplicated(true);
+}
+
+void AItemActor::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AItemActor, ItemTag);
+	DOREPLIFETIME(AItemActor, NumItems);
 }
 
 void AItemActor::SetParams(const FRPGInventoryEntry* Entry, int32 InNumItems)

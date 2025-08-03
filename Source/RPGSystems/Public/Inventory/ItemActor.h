@@ -20,14 +20,20 @@ public:
 
 	AItemActor();
 
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 	void SetParams(const FRPGInventoryEntry* Entry, int32 InNumItems);
 	void SetMesh(UStaticMesh* InMesh);
 
-private:
-
+	UPROPERTY(Replicated, BlueprintReadOnly)
 	FGameplayTag ItemTag;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
 	int32 NumItems = 1;
+	
 	FEquipmentEffectPackage EffectPackage;
+
+private:
 
 	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
