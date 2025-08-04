@@ -456,7 +456,6 @@ void UInventoryComponent::DropItem(const FRPGInventoryEntry& Entry, int32 NumIte
 	}
 
 	ItemDroppedDelegate.Broadcast(&Entry, NumItems);
-	InventoryList.RemoveItem(Entry, NumItems);
 }
 
 void UInventoryComponent::ServerDropItem_Implementation(const FRPGInventoryEntry& Entry, int32 NumItems)
