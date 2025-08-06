@@ -177,6 +177,9 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerDropItem(const FRPGInventoryEntry& Entry, int32 NumItems);
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerPickupItem(AItemActor* Item);
+
+	bool ServerPickupItem_Validate(AItemActor* Item);
+
 };

@@ -3,3 +3,5 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#define SERVER_BITS 0x5C
