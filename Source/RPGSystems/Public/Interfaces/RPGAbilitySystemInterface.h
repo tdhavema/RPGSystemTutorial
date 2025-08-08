@@ -7,6 +7,7 @@
 #include "UObject/Interface.h"
 #include "RPGAbilitySystemInterface.generated.h"
 
+struct FScalableFloat;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class URPGAbilitySystemInterface : public UInterface
@@ -29,5 +30,14 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetDynamicProjectile(const FGameplayTag& ProjectileTag, int32 AbilityLevel = 1);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void AddToExperience(const FScalableFloat& XPScale);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void AddAttackingActor(AActor* AttackingActor);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void Death();
 
 };

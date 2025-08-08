@@ -58,6 +58,14 @@ USceneComponent* ARPGSystemsCharacter::GetDynamicSpawnPoint_Implementation()
 	return DynamicProjectileSpawnPoint;
 }
 
+void ARPGSystemsCharacter::AddToExperience_Implementation(const FScalableFloat& XPScale)
+{
+	if (ARPGPlayerState* RPGPlayerState = GetPlayerState<ARPGPlayerState>())
+	{
+		RPGPlayerState->AddToExperience(XPScale);
+	}
+}
+
 void ARPGSystemsCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);

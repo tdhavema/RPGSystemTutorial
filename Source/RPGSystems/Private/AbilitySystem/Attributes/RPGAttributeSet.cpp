@@ -5,6 +5,7 @@
 
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/RPGAbilityTypes.h"
+#include "Character/EnemyBase.h"
 #include "Net/UnrealNetwork.h"
 
 void URPGAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -67,6 +68,21 @@ void URPGAttributeSet::HandleIncomingDamage(const FGameplayEffectModCallbackData
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, DebugColor,
 		FString::Printf(TEXT("Damage Dealt %.2f"), LocalDamage));
+
+	AActor* TargetActor = Data.Target.GetAvatarActor();
+
+	if (IsValid(TargetActor) && TargetActor->IsA(AEnemyBase::StaticClass()) && TargetActor->HasAuthority())
+	{
+		if (UAbilitySystemComponent* AttackingASC = RPGContext->GetOriginalInstigatorAbilitySystemComponent())
+		{
+			IRPGAbilitySystemInterface::Execute_AddAttackingActor(TargetActor, AttackingASC->GetAvatarActor());
+		}
+	}
+
+	if (GetHealth() < 1.f && IsValid(TargetActor))
+	{
+		IRPGAbilitySystemInterface::Execute_Death(TargetActor);
+	}
 }
 
 void URPGAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)

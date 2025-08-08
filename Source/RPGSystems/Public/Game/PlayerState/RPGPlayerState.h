@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "ScalableFloat.h"
 #include "GameFramework/PlayerState.h"
 #include "RPGPlayerState.generated.h"
 
@@ -28,6 +29,14 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	URPGAttributeSet* GetRPGAttributes() const;
+
+	void AddToExperience(const FScalableFloat& XPScale);
+
+	int32 CurrentExperience = 0;
+	int32 PlayerLevel = 1;
+
+	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Experience")
+	FScalableFloat RequiredLevelUpExperience;
 
 private:
 

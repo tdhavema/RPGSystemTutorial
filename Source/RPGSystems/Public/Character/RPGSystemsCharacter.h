@@ -47,6 +47,7 @@ public:
 
 	/* Implement RPGAbilitySystemInteface */
 	virtual USceneComponent* GetDynamicSpawnPoint_Implementation() override;
+	virtual void AddToExperience_Implementation(const FScalableFloat& XPScale) override;
 
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
