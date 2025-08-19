@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerState.h"
 #include "RPGPlayerState.generated.h"
 
+class UGameplayEffect;
 class URPGAttributeSet;
 class URPGAbilitySystemComponent;
 /**
@@ -40,11 +41,15 @@ public:
 
 private:
 
+	void LevelUp();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<URPGAbilitySystemComponent> RPGAbilitySystemComp;
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<URPGAttributeSet> RPGAttributes;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Level Up")
+	TSubclassOf<UGameplayEffect> LevelUpEffect;
 	
 };

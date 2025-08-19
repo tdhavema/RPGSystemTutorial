@@ -32,6 +32,18 @@ URPGAttributeSet* ARPGPlayerState::GetRPGAttributes() const
 	return RPGAttributes;
 }
 
+void ARPGPlayerState::LevelUp()
+{
+	check(LevelUpEffect);
+
+	if (IsValid(RPGAbilitySystemComp))
+	{
+		FGameplayEffectContextHandle ContextHandle = RPGAbilitySystemComp->MakeEffectContext();
+		FGameplayEffectSpecHandle SpecHandle = RPGAbilitySystemComp->MakeOutgoingSpec(LevelUpEffect, PlayerLevel, ContextHandle);
+		RPGAbilitySystemComp->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	}
+}
+
 void ARPGPlayerState::AddToExperience(const FScalableFloat& XPScale)
 {
 	CurrentExperience += XPScale.GetValueAtLevel(PlayerLevel);
@@ -44,5 +56,7 @@ void ARPGPlayerState::AddToExperience(const FScalableFloat& XPScale)
 	{
 		PlayerLevel++;
 		CurrentExperience = CurrentExperience - RequiredExperience;
+		LevelUp();
 	}
 }
+
