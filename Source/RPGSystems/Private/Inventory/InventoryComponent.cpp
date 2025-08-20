@@ -22,7 +22,7 @@ namespace RPGGameplayTags::Static
 }
 
 
-void FRPGInventoryList::AddItem(const FGameplayTag& ItemTag, int32 NumItems)
+FRPGInventoryEntry* FRPGInventoryList::AddItem(const FGameplayTag& ItemTag, int32 NumItems)
 {
 	if (ItemTag.MatchesTag(RPGGameplayTags::Static::Category_Equipment))
 	{
@@ -43,7 +43,7 @@ void FRPGInventoryList::AddItem(const FGameplayTag& ItemTag, int32 NumItems)
 				{
 					DirtyItemDelegate.Broadcast(Entry);
 				}
-				return;
+				return &Entry;
 			}
 		}
 	}
@@ -67,6 +67,8 @@ void FRPGInventoryList::AddItem(const FGameplayTag& ItemTag, int32 NumItems)
 	}
 
 	MarkItemDirty(NewEntry);
+
+	return &NewEntry;
 }
 
 void FRPGInventoryList::RollForStats(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition, FRPGInventoryEntry* Entry)
@@ -79,8 +81,7 @@ void FRPGInventoryList::RollForStats(const TSubclassOf<UEquipmentDefinition>& Eq
 		bool bShouldRoll = true;
 		while (bShouldRoll)
 		{
-			const int32 RandomIndex = FMath::RandRange(0, EquipmentCDO->PossibleAbilityRolls.Num() - 1);
-			const FGameplayTag& RandomTag = EquipmentCDO->PossibleAbilityRolls.GetByIndex(RandomIndex);
+			const FGameplayTag& RandomTag = URPGAbilitySystemLibrary::GetRandomTagFromContainer(EquipmentCDO->PossibleAbilityRolls);
 
 			for (const auto& Pair : StatEffects->MasterStatMap)
 			{
@@ -106,8 +107,8 @@ void FRPGInventoryList::RollForStats(const TSubclassOf<UEquipmentDefinition>& Eq
 	FGameplayTagContainer PossibleStatContainer = EquipmentCDO->PossibleStatRolls;
 	while (StatRollIndex < NumStatsToRoll)
 	{
-		const int32 RandomIndex = FMath::RandRange(0, PossibleStatContainer.Num() - 1);
-		const FGameplayTag& RandomTag = PossibleStatContainer.GetByIndex(RandomIndex);
+		
+		const FGameplayTag& RandomTag = URPGAbilitySystemLibrary::GetRandomTagFromContainer(PossibleStatContainer);
 
 		for (const auto& Pair : StatEffects->MasterStatMap)
 		{

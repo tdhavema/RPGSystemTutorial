@@ -57,3 +57,9 @@ float URPGAbilitySystemLibrary::GetScalableFloatValueAtLevel(const FScalableFloa
 {
 	return Curve.GetValueAtLevel(InLevel);
 }
+
+FGameplayTag URPGAbilitySystemLibrary::GetRandomTagFromContainer(const FGameplayTagContainer& Container)
+{
+	const int32 RandomIndex = FMath::RandRange(0, Container.Num() - 1);
+	return Container.GetByIndex(RandomIndex);
+}

@@ -26,6 +26,7 @@ void AItemActor::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& Out
 	DOREPLIFETIME(AItemActor, ItemTag);
 	DOREPLIFETIME(AItemActor, NumItems);
 	DOREPLIFETIME(AItemActor, ValidationBits);
+	DOREPLIFETIME(AItemActor, EffectPackage);
 }
 
 void AItemActor::SetParams(const FRPGInventoryEntry* Entry, int32 InNumItems)

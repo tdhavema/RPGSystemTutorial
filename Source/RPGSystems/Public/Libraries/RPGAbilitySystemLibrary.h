@@ -36,6 +36,9 @@ public:
 	UFUNCTION(BlueprintPure)
 	static float GetScalableFloatValueAtLevel(const FScalableFloat& Curve, float InLevel);
 
+	UFUNCTION(BlueprintPure)
+	static FGameplayTag GetRandomTagFromContainer(const FGameplayTagContainer& Container);
+
 	template<typename T>
 	static T* GetDataTableRowByTag(UDataTable* DataTable, FGameplayTag Tag);
 	

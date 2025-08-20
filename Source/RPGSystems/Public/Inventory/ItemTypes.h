@@ -55,12 +55,28 @@ struct FMasterItemDefinition : public FTableRowBase
 	TSoftObjectPtr<UTexture2D> Icon = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FText Description = FText();
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FConsumableProps ConsumableProps = FConsumableProps();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FEquipmentItemProps EquipmentItemProps = FEquipmentItemProps();
+	
+};
+
+USTRUCT(BlueprintType)
+struct FPossibleLootParams : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	FGameplayTag ResultingItemTag = FGameplayTag::EmptyTag;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 MinNumItems = 1;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 MaxNumItems = 1;
+
+	UPROPERTY(EditDefaultsOnly)
+	float ProbabilityToSelect = 0.f;
 	
 };

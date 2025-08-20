@@ -23,10 +23,10 @@ struct FRPGInventoryEntry : public FFastArraySerializerItem
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
-	FGameplayTag ItemTag = FGameplayTag();
+	UPROPERTY(BlueprintReadWrite)
+	FGameplayTag ItemTag = FGameplayTag::EmptyTag;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	FText ItemName = FText();
 
 	UPROPERTY(BlueprintReadOnly)
@@ -35,7 +35,7 @@ struct FRPGInventoryEntry : public FFastArraySerializerItem
 	UPROPERTY(BlueprintReadOnly)
 	int64 ItemID = 0;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	FEquipmentEffectPackage EffectPackage = FEquipmentEffectPackage();
 
 	bool IsValid() const
@@ -66,7 +66,7 @@ struct FRPGInventoryList : public FFastArraySerializer
 	OwnerComponent(InComponent)
 	{}
 
-	void AddItem(const FGameplayTag& ItemTag, int32 NumItems = 1);
+	FRPGInventoryEntry* AddItem(const FGameplayTag& ItemTag, int32 NumItems = 1);
 	void RemoveItem(const FRPGInventoryEntry& Entry, int32 NumItems = 1);
 	bool HasEnough(const FGameplayTag& ItemTag, int32 NumItems = 1);
 	uint64 GenerateID();
