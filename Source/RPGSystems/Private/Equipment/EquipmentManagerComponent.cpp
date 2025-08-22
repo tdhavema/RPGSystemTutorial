@@ -148,7 +148,27 @@ void FRPGEquipmentList::CheckAbilityLevels(UAbilitySystemComponent* ASC, FRPGEqu
 
 				if (!bAsync && CurrentEntry.EntryTag.MatchesTagExact(EquipmentEntry->EntryTag)) continue;
 
-				for (const FEquipmentStatEffectGroup& StatEffect : CurrentEntry.EffectPackage.StatEffects)
+				if (CurrentEntry.EffectPackage.Implicit.StatEffectTag.IsValid())
+				{
+					const FEquipmentStatEffectGroup& ImplicitStat = CurrentEntry.EffectPackage.Implicit;
+					
+					if (Spec.GetDynamicSpecSourceTags().HasTagExact(ImplicitStat.ContextTag))
+					{
+						Spec.Level = FMath::Clamp(Spec.Level + ImplicitStat.CurrentValue, 1.f, Spec.Level + ImplicitStat.CurrentValue);
+					}
+				}
+
+				for (const FEquipmentStatEffectGroup& StatEffect : CurrentEntry.EffectPackage.Prefixes)
+				{
+					if (!StatEffect.ContextTag.IsValid()) continue;
+
+					if (Spec.GetDynamicSpecSourceTags().HasTagExact(StatEffect.ContextTag))
+					{
+						Spec.Level = FMath::Clamp(Spec.Level + StatEffect.CurrentValue, 1.f, Spec.Level + StatEffect.CurrentValue);
+					}
+				}
+
+				for (const FEquipmentStatEffectGroup& StatEffect : CurrentEntry.EffectPackage.Suffixes)
 				{
 					if (!StatEffect.ContextTag.IsValid()) continue;
 

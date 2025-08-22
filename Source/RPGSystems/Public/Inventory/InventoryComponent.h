@@ -72,6 +72,7 @@ struct FRPGInventoryList : public FFastArraySerializer
 	uint64 GenerateID();
 	void SetStats(UEquipmentStatEffects* InStats);
 	void RollForStats(const TSubclassOf<UEquipmentDefinition>& EquipmentDefinition, FRPGInventoryEntry* Entry);
+	void RollPrefixOrSuffix(EEquipmentStatGroup StatGroup, UEquipmentStatEffects* StatEffects, FRPGInventoryEntry* Entry, FGameplayTagContainer& PossibleStatContainer);
 	void AddUnEquippedItem(const FGameplayTag& ItemTag, const FEquipmentEffectPackage& EffectPackage, int32 NumItems = 1);
 
 	// FFastArraySerializer Contract
@@ -154,6 +155,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	TArray<FRPGInventoryEntry> GetEntriesByString(const FString& String);
 	void SpawnItem(const FTransform& SpawnTransform, const FRPGInventoryEntry* Entry, int32 NumItems);
+	
 
 private:
 

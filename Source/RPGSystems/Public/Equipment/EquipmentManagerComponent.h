@@ -36,7 +36,7 @@ struct FRPGEquipmentEntry : public FFastArraySerializerItem
 
 	bool HasStats() const
 	{
-		return !EffectPackage.StatEffects.IsEmpty();
+		return !EffectPackage.Prefixes.IsEmpty() || !EffectPackage.Suffixes.IsEmpty();
 	}
 
 	bool HasAbility() const

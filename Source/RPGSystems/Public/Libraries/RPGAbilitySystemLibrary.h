@@ -39,6 +39,9 @@ public:
 	UFUNCTION(BlueprintPure)
 	static FGameplayTag GetRandomTagFromContainer(const FGameplayTagContainer& Container);
 
+	UFUNCTION(BlueprintCallable)
+	static FGameplayTagContainer GetAllChildrenTagsOfCategories(const FGameplayTagContainer& CategoryTags);
+
 	template<typename T>
 	static T* GetDataTableRowByTag(UDataTable* DataTable, FGameplayTag Tag);
 	

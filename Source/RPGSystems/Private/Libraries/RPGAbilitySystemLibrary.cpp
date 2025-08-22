@@ -63,3 +63,17 @@ FGameplayTag URPGAbilitySystemLibrary::GetRandomTagFromContainer(const FGameplay
 	const int32 RandomIndex = FMath::RandRange(0, Container.Num() - 1);
 	return Container.GetByIndex(RandomIndex);
 }
+
+FGameplayTagContainer URPGAbilitySystemLibrary::GetAllChildrenTagsOfCategories(
+	const FGameplayTagContainer& CategoryTags)
+{
+	FGameplayTagContainer AllChildrenTags;
+	const UGameplayTagsManager& TagsManager = UGameplayTagsManager::Get();
+
+	for (const FGameplayTag& CategoryTag : CategoryTags)
+	{
+		AllChildrenTags.AppendTags(TagsManager.RequestGameplayTagChildren(CategoryTag));
+	}
+
+	return AllChildrenTags;
+}

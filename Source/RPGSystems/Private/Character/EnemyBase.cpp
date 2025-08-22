@@ -77,17 +77,8 @@ void AEnemyBase::SpawnLoot()
 	check(LootSpawnInfo);
 
 	FGameplayTagContainer AllLootTags;
-	const UGameplayTagsManager& TagsManager = UGameplayTagsManager::Get();
-
-	for (const FGameplayTag& CategoryTag : LootCategoryTags)
-	{
-		AllLootTags.AppendTags(TagsManager.RequestGameplayTagChildren(CategoryTag));
-	}
-
-	for (const FGameplayTag& SpecificTag : SpecificLootTags)
-	{
-		AllLootTags.AddTag(SpecificTag);
-	}
+	AllLootTags.AppendTags(URPGAbilitySystemLibrary::GetAllChildrenTagsOfCategories(LootCategoryTags)); 
+	AllLootTags.AppendTags(SpecificLootTags);
 
 	bool bShouldSpawn = true;
 
