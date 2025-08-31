@@ -67,6 +67,14 @@ public:
 	FGameplayAttributeData MovementSpeed;
 	ATTRIBUTE_ACCESSORS(URPGAttributeSet, MovementSpeed);
 
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_OutgoingAbilityDamage)
+	FGameplayAttributeData OutgoingAbilityDamage;
+	ATTRIBUTE_ACCESSORS(URPGAttributeSet, OutgoingAbilityDamage);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_AbilityDamageResistance)
+	FGameplayAttributeData AbilityDamageResistance;
+	ATTRIBUTE_ACCESSORS(URPGAttributeSet, AbilityDamageResistance);
+
 	UPROPERTY()
 	FGameplayAttributeData IncomingDamage;
 	ATTRIBUTE_ACCESSORS(URPGAttributeSet, IncomingDamage)
@@ -105,5 +113,11 @@ private:
 
 	UFUNCTION()
 	void OnRep_MovementSpeed(const FGameplayAttributeData& OldMovementSpeed);
+
+	UFUNCTION()
+	void OnRep_OutgoingAbilityDamage(const FGameplayAttributeData& OldOutgoingAbilityDamage);
+
+	UFUNCTION()
+	void OnRep_AbilityDamageResistance(const FGameplayAttributeData& OldAbilityDamageResistance);
 	
 };

@@ -94,6 +94,9 @@ struct FEquipmentAbilityGroup : public FTableRowBase
 	TSoftClassPtr<UGameplayAbility> AbilityClass = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTagContainer AbilityContextTags = FGameplayTagContainer::EmptyContainer;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 AbilityLevel = 1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -101,6 +104,12 @@ struct FEquipmentAbilityGroup : public FTableRowBase
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float ProbabilityToSelect = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FScalableFloat MinDamageCoefficient = FScalableFloat();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FScalableFloat MaxDamageCoefficient = FScalableFloat();
 	
 };
 
@@ -108,6 +117,9 @@ USTRUCT(BlueprintType)
 struct FEquipmentEffectPackage
 {
 	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	FEquipmentStatEffectGroup BaseDamage = FEquipmentStatEffectGroup();
 
 	UPROPERTY(BlueprintReadOnly)
 	FEquipmentStatEffectGroup Implicit = FEquipmentStatEffectGroup();

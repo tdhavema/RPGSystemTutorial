@@ -12,9 +12,11 @@ void URPGDamageAbility::CaptureDamageEffectInfo(AActor* TargetActor, FDamageEffe
 	{
 		OutInfo.AbilityLevel = GetAbilityLevel();
 		OutInfo.AvatarActor = AvatarActorFromInfo;
-		OutInfo.BaseDamage = BaseDamage.GetValueAtLevel(GetAbilityLevel());
+		OutInfo.BaseDamage = FMath::FRandRange(MinDamageCoefficient.GetValueAtLevel(OutInfo.AbilityLevel),
+												MaxDamageCoefficient.GetValueAtLevel(OutInfo.AbilityLevel));
 		OutInfo.DamageEffect = DamageEffect;
 		OutInfo.SourceASC = GetAbilitySystemComponentFromActorInfo();
+		OutInfo.AbilityDynamicTags = GetCurrentAbilitySpec()->GetDynamicSpecSourceTags();
 
 		if (IsValid(TargetActor))
 		{

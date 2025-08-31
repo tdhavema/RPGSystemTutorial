@@ -36,8 +36,10 @@ void URPGAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectInfo& Damage
 	FGameplayEffectContextHandle ContextHandle = DamageEffectInfo.SourceASC->MakeEffectContext();
 	ContextHandle.AddSourceObject(DamageEffectInfo.AvatarActor);
 
-	const FGameplayEffectSpecHandle SpecHandle = DamageEffectInfo.SourceASC->MakeOutgoingSpec(DamageEffectInfo.DamageEffect, DamageEffectInfo.AbilityLevel, ContextHandle);
+	FGameplayEffectSpecHandle SpecHandle = DamageEffectInfo.SourceASC->MakeOutgoingSpec(DamageEffectInfo.DamageEffect, DamageEffectInfo.AbilityLevel, ContextHandle);
 
+	SpecHandle.Data->AppendDynamicAssetTags(DamageEffectInfo.AbilityDynamicTags);
+	
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, RPGGameplayTags::Combat::Data_Damage, DamageEffectInfo.BaseDamage);
 	if (IsValid(DamageEffectInfo.TargetASC))
 	{
@@ -76,4 +78,10 @@ FGameplayTagContainer URPGAbilitySystemLibrary::GetAllChildrenTagsOfCategories(
 	}
 
 	return AllChildrenTags;
+}
+
+FGameplayTagContainer URPGAbilitySystemLibrary::GetDamageTypeTags()
+{
+	const UGameplayTagsManager& TagsManager = UGameplayTagsManager::Get();
+	return TagsManager.RequestGameplayTagChildren(RPGGameplayTags::Combat::DamageTypes::DamageTypeParent);
 }

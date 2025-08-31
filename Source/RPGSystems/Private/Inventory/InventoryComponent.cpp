@@ -76,6 +76,13 @@ void FRPGInventoryList::RollForStats(const TSubclassOf<UEquipmentDefinition>& Eq
 	UEquipmentStatEffects* StatEffects = WeakStats.Get();
 	const UEquipmentDefinition* EquipmentCDO = GetDefault<UEquipmentDefinition>(EquipmentDefinition);
 
+	if (EquipmentCDO->BaseDamage.DamageTypeTag.IsValid())
+	{
+		Entry->EffectPackage.BaseDamage.StatEffectTag = EquipmentCDO->BaseDamage.DamageTypeTag;
+		Entry->EffectPackage.BaseDamage.EffectClass = EquipmentCDO->BaseDamage.EffectClass;
+		Entry->EffectPackage.BaseDamage.CurrentValue = EquipmentCDO->BaseDamage.EffectLevel;
+	}
+
 	if (EquipmentCDO->bForceAbilityRoll || FMath::FRandRange(0.f, 1.f) < EquipmentCDO->ProbabilityToRollAbility)
 	{
 		bool bShouldRoll = true;

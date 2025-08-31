@@ -93,6 +93,9 @@ struct FDamageEffectInfo
 	TObjectPtr<AActor> AvatarActor = nullptr;
 
 	UPROPERTY(BlueprintReadWrite)
+	FGameplayTagContainer AbilityDynamicTags = FGameplayTagContainer::EmptyContainer;
+
+	UPROPERTY(BlueprintReadWrite)
 	TSubclassOf<UGameplayEffect> DamageEffect = nullptr;
 
 	UPROPERTY(BlueprintReadWrite)

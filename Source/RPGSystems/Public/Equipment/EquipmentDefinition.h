@@ -9,6 +9,7 @@
 
 class AEquipmentActor;
 class UEquipmentInstance;
+class UGameplayEffect;
 
 USTRUCT()
 struct FEquipmentActorsToSpawn
@@ -43,6 +44,21 @@ struct FPossibleEquipmentStats
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTagContainer SpecificSuffixTags = FGameplayTagContainer::EmptyContainer;
 };
+
+USTRUCT()
+struct FTaggedDamageType
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	FGameplayTag DamageTypeTag = FGameplayTag::EmptyTag;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSoftClassPtr<UGameplayEffect> EffectClass = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 EffectLevel = 1;
+};
 /**
  * 
  */
@@ -76,6 +92,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Actors")
 	TArray<FEquipmentActorsToSpawn> ActorsToSpawn;
+
+	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Ability")
+	FTaggedDamageType BaseDamage;
 
 	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Ability")
 	FGameplayTagContainer PossibleAbilityRolls;
