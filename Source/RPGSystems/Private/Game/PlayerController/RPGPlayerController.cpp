@@ -37,6 +37,26 @@ void ARPGPlayerController::SetupInputComponent()
 	}
 }
 
+void ARPGPlayerController::InitPlayerState()
+{
+	Super::InitPlayerState();
+
+	if (ARPGPlayerState* RPGPlayerState = Cast<ARPGPlayerState>(PlayerState))
+	{
+		RPGAbilitySystemComp = RPGPlayerState->GetRPGAbilitySystemComponent();
+	}
+}
+
+void ARPGPlayerController::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	if (ARPGPlayerState* RPGPlayerState = Cast<ARPGPlayerState>(PlayerState))
+	{
+		RPGAbilitySystemComp = RPGPlayerState->GetRPGAbilitySystemComponent();
+	}
+}
+
 void ARPGPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -53,7 +73,7 @@ void ARPGPlayerController::BeginPlay()
 
 void ARPGPlayerController::AbilityInputPressed(FGameplayTag InputTag)
 {
-	if (IsValid(GetRPGAbilitySystemComponent()))
+	if (IsValid(RPGAbilitySystemComp))
 	{
 		RPGAbilitySystemComp->AbilityInputPressed(InputTag);
 	}
@@ -61,23 +81,10 @@ void ARPGPlayerController::AbilityInputPressed(FGameplayTag InputTag)
 
 void ARPGPlayerController::AbilityInputReleased(FGameplayTag InputTag)
 {
-	if (IsValid(GetRPGAbilitySystemComponent()))
+	if (IsValid(RPGAbilitySystemComp))
 	{
 		RPGAbilitySystemComp->AbilityInputReleased(InputTag);
 	}
-}
-
-URPGAbilitySystemComponent* ARPGPlayerController::GetRPGAbilitySystemComponent()
-{
-	if (!IsValid(RPGAbilitySystemComp))
-	{
-		if (const ARPGPlayerState* RPGPlayerState = GetPlayerState<ARPGPlayerState>())
-		{
-			RPGAbilitySystemComp = RPGPlayerState->GetRPGAbilitySystemComponent();
-		}
-	}
-
-	return RPGAbilitySystemComp;
 }
 
 void ARPGPlayerController::BindCallbacksToDependencies()
@@ -137,7 +144,7 @@ void ARPGPlayerController::SetDynamicProjectile_Implementation(const FGameplayTa
 
 UAbilitySystemComponent* ARPGPlayerController::GetAbilitySystemComponent() const
 {
-	return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn());
+	return RPGAbilitySystemComp;
 }
 
 UInventoryWidgetController* ARPGPlayerController::GetInventoryWidgetController()

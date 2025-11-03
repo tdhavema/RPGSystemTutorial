@@ -39,10 +39,16 @@ struct FPossibleEquipmentStats
 	FGameplayTagContainer SpecificPrefixTags = FGameplayTagContainer::EmptyContainer;
 
 	UPROPERTY(EditDefaultsOnly)
+	FGameplayTagContainer PrefixExclusionTags = FGameplayTagContainer::EmptyContainer;
+
+	UPROPERTY(EditDefaultsOnly)
 	FGameplayTagContainer SuffixCategoryTags = FGameplayTagContainer::EmptyContainer;
 
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTagContainer SpecificSuffixTags = FGameplayTagContainer::EmptyContainer;
+
+	UPROPERTY(EditDefaultsOnly)
+	FGameplayTagContainer SuffixExclusionTags = FGameplayTagContainer::EmptyContainer;
 };
 
 USTRUCT()

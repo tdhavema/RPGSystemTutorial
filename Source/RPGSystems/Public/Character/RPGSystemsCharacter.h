@@ -45,7 +45,7 @@ public:
 	
 	ARPGSystemsCharacter(const FObjectInitializer& ObjectInitializer);
 
-	/* Implement RPGAbilitySystemInteface */
+	/* Implement RPGAbilitySystemInterface */
 	virtual USceneComponent* GetDynamicSpawnPoint_Implementation() override;
 	virtual void AddToExperience_Implementation(const FScalableFloat& XPScale) override;
 

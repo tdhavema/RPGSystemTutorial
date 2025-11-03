@@ -131,10 +131,12 @@ void FRPGInventoryList::RollForStats(const TSubclassOf<UEquipmentDefinition>& Eq
 	FGameplayTagContainer AllPossiblePrefixes;
 	AllPossiblePrefixes.AppendTags(URPGAbilitySystemLibrary::GetAllChildrenTagsOfCategories(EquipmentCDO->PossibleStatRolls.PrefixCategoryTags));
 	AllPossiblePrefixes.AppendTags(EquipmentCDO->PossibleStatRolls.SpecificPrefixTags);
+	AllPossiblePrefixes.RemoveTags(EquipmentCDO->PossibleStatRolls.PrefixExclusionTags);
 
 	FGameplayTagContainer AllPossibleSuffixes;
 	AllPossibleSuffixes.AppendTags(URPGAbilitySystemLibrary::GetAllChildrenTagsOfCategories(EquipmentCDO->PossibleStatRolls.SuffixCategoryTags));
 	AllPossibleSuffixes.AppendTags(EquipmentCDO->PossibleStatRolls.SpecificSuffixTags);
+	AllPossibleSuffixes.RemoveTags(EquipmentCDO->PossibleStatRolls.SuffixExclusionTags);
 	
 	const int32 NumStatsToRoll = FMath::RandRange(EquipmentCDO->MinPossibleStats, EquipmentCDO->MaxPossibleStats);
 	int32 StatRollIndex = 0;

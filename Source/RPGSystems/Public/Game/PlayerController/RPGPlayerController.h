@@ -30,6 +30,8 @@ public:
 	ARPGPlayerController();
 
 	virtual void SetupInputComponent() override;
+	virtual void InitPlayerState() override;
+	virtual void OnRep_PlayerState() override;
 
 	/* Implement Inventory Interface */
 	virtual UInventoryComponent* GetInventoryComponent_Implementation() override;
@@ -77,8 +79,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Widgets")
 	TSubclassOf<URPGSystemsWidget> InventoryWidgetClass;
-
-	URPGAbilitySystemComponent* GetRPGAbilitySystemComponent();
+	
 	void BindCallbacksToDependencies();
 
 	void SpawnItem(const FRPGInventoryEntry* Entry, int32 NumItems);
