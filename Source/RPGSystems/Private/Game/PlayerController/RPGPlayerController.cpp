@@ -25,8 +25,6 @@ ARPGPlayerController::ARPGPlayerController()
 	InventoryComponent->SetIsReplicated(true);
 
 	EquipmentComponent = CreateDefaultSubobject<UEquipmentManagerComponent>("EquipmentComponent");
-
-	bEnableClickEvents = true;
 }
 
 void ARPGPlayerController::SetupInputComponent()
