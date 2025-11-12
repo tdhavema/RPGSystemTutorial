@@ -20,6 +20,7 @@
 ARPGPlayerController::ARPGPlayerController()
 {
 	bReplicates = true;
+	bEnableClickEvents = true;
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>("InventoryComponent");
 	InventoryComponent->SetIsReplicated(true);
