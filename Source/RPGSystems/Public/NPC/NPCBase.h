@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/InteractInterface.h"
 #include "NPCBase.generated.h"
@@ -18,6 +19,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Custom Values|Name")
 	FText Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom Values|Options")
+	TArray<FGameplayTag> Options;
 
 private:
 
