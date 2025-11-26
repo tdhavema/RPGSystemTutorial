@@ -6,6 +6,18 @@
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystem/RPGAbilityTypes.h"
 
+
+void URPGDamageAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
+{
+	Super::OnGiveAbility(ActorInfo, Spec);
+
+	if (URPGDamageAbility* CDO = Cast<URPGDamageAbility>(Spec.Ability))
+	{
+		MinDamageCoefficient = CDO->MinDamageCoefficient;
+		MaxDamageCoefficient = CDO->MaxDamageCoefficient;
+	}
+}
+
 void URPGDamageAbility::CaptureDamageEffectInfo(AActor* TargetActor, FDamageEffectInfo& OutInfo)
 {
 	if (AActor* AvatarActorFromInfo = GetAvatarActorFromActorInfo())

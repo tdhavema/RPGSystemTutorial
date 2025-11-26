@@ -18,6 +18,11 @@ void UProjectileAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInf
 	Super::OnGiveAbility(ActorInfo, Spec);
 
 	AvatarActorFromInfo = GetAvatarActorFromActorInfo();
+
+	if (UProjectileAbility* CDO = Cast<UProjectileAbility>(Spec.Ability))
+	{
+		ProjectileToSpawnTag = CDO->ProjectileToSpawnTag;
+	}
 	
 	if (!ProjectileToSpawnTag.IsValid() || !IsValid(AvatarActorFromInfo)) return;
 
@@ -25,7 +30,6 @@ void UProjectileAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInf
 	{
 		CurrentProjectileParams = *ProjectileInfo->ProjectileInfoMap.Find(ProjectileToSpawnTag);
 	}
-	
 }
 
 void UProjectileAbility::SpawnProjectile()

@@ -17,6 +17,7 @@ class RPGSYSTEMS_API URPGDamageAbility : public URPGGameplayAbility
 
 public:
 
+	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
 	void CaptureDamageEffectInfo(AActor* TargetActor, FDamageEffectInfo& OutInfo);
 
 	UPROPERTY(EditDefaultsOnly, Category="Custom Values|Damage")
